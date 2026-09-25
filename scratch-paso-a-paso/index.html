@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scratch paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 5 actividades · 5 vídeos</div>
+  <h1>Scratch paso a paso: tu primer videojuego</h1>
+  <p class="lead">Cada actividad va con un vídeo. Míralo entero una vez, después haz los pasos en tu ordenador. Antes de pasar a la siguiente actividad, revisa la lista «Comprueba».</p>
+  <ul class="toc">
+    <li><a href="#a1"><b>1</b> Tu cuenta</a></li>
+    <li><a href="#a2"><b>2</b> Objetos y disfraces</a></li>
+    <li><a href="#a3"><b>3</b> Coordenadas y movimiento</a></li>
+    <li><a href="#a4"><b>4</b> El murciélago te persigue</a></li>
+    <li><a href="#a5"><b>5</b> Tiburón, pez y variables</a></li>
+  </ul>
+  <div class="note">
+    <strong>Los vídeos usan Scratch 2 y tú vas a usar Scratch 3</strong>
+    <p>Los bloques son los mismos pero la pantalla está organizada de otra forma. En Scratch 3 los <strong>bloques</strong> están a la izquierda, el <strong>área de programación</strong> en el centro y el <strong>escenario</strong> arriba a la derecha. Los objetos aparecen debajo del escenario. Cuando algo sea distinto, lo verás en un recuadro amarillo.</p>
+  </div>
+</header>
+
+<section class="lesson" id="a1" style="--c:#4c97ff">
+  <div class="lesson-head"><div class="num">1</div><h2>Crea tu cuenta y tu primer proyecto</h2><p class="goal">Vas a acabar con una cuenta de Scratch y un proyecto guardado.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 1 · Registrarse y acceder a Scratch (≈5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/BMU-UlPf_0A" title="Vídeo 1 · Registrarse y acceder a Scratch (≈5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=BMU-UlPf_0A" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <ol class="steps">
+    <li><div><p>Entra en <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>. En la portada verás proyectos y estudios destacados de otros usuarios.</p></div></li>
+    <li><div><p>Pulsa <strong>Únete a Scratch</strong>. Elige un nombre de usuario y una contraseña, repite la contraseña y rellena los pasos siguientes (te pedirá el correo). Tu nombre de usuario no debe ser tu nombre real.</p></div></li>
+    <li><div><p>Si ya tienes cuenta, pulsa <strong>Ingresar</strong> y escribe tu usuario y contraseña.</p></div></li>
+    <li><div><p>Pulsa <strong>Crear</strong> en la barra de arriba. Se abre un proyecto sin título.</p></div></li>
+    <li><div><p>Escribe <code>prueba</code> en la caja del título. Después usa <strong>Archivo → Guardar ahora</strong>.</p></div></li>
+    <li><div><p>Pulsa tu nombre de usuario (arriba a la derecha) y entra en <strong>Perfil</strong>. Escribe un par de líneas en «Acerca de mí». En esta página aparecerán después tus proyectos compartidos, tus favoritos, los estudios que sigues y quién te sigue.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>El vídeo instala Adobe AIR para usar Scratch sin internet. Ya no hace falta: si quieres trabajar sin conexión, descarga la aplicación de Scratch desde <a href="https://scratch.mit.edu/download" target="_blank" rel="noopener">scratch.mit.edu/download</a>. En clase usaremos la versión online.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Ves tu usuario arriba a la derecha.</li><li>El proyecto <code>prueba</code> aparece en <strong>Mis cosas</strong> (icono de carpeta, arriba).</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#9966ff">
+  <div class="lesson-head"><div class="num">2</div><h2>Objetos, fondos, sonidos y disfraces</h2><p class="goal">Vas a acabar con cuatro personajes, un fondo y un murciélago rojo editado por ti.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 2 · La pantalla, los objetos y el editor de disfraces (≈7 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/7P8q1ltd44Y" title="Vídeo 2 · La pantalla, los objetos y el editor de disfraces (≈7 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=7P8q1ltd44Y" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Añadir objetos</h3>
+  <ol class="steps">
+    <li><div><p>Abre un proyecto nuevo (<strong>Archivo → Nuevo</strong>) y llámalo <code>Persigue</code>. Ya tiene un objeto: el gato.</p></div></li>
+    <li><div><p>Debajo del escenario, pon el ratón sobre el botón redondo del gato (<strong>Elige un objeto</strong>) y pulsa la lupa. Añade estos tres objetos, uno cada vez: <strong>Bat</strong> (murciélago), <strong>Cake</strong> (pastel) y <strong>Donut</strong>. Arriba de la biblioteca hay categorías (Animales, Comida…) que te ayudan a encontrarlos.</p></div></li>
+    <li><div><p>Selecciona el gato y, en la caja <strong>Objeto</strong>, cambia su nombre a <code>gato</code>. Cambia el del murciélago a <code>murcielago</code>.</p></div></li>
+  </ol>
+  <h3>Parte B · Estilo de rotación y otras propiedades</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el murciélago y pulsa en el número de <strong>Dirección</strong>. Se abre una ruedecita con tres estilos de rotación. Pruébalos:</p>
+      <div class="tbl"><table>
+        <tr><th>Estilo</th><th>Qué hace</th></tr>
+        <tr><td>Todo alrededor</td><td>Gira sobre su centro, como si tuviera un eje en el ombligo. Puede quedar boca abajo.</td></tr>
+        <tr><td>Izquierda/derecha</td><td>Solo mira a la izquierda o a la derecha. Nunca queda boca abajo.</td></tr>
+        <tr><td>No rotar</td><td>Siempre mira hacia el mismo lado.</td></tr>
+      </table></div></div></li>
+    <li><div><p>Prueba también los botones <strong>Mostrar</strong> (ojo abierto y ojo cerrado): hacen que el objeto aparezca o desaparezca del escenario.</p></div></li>
+  </ol>
+  <h3>Parte C · Fondo y sonidos</h3>
+  <ol class="steps">
+    <li><div><p>Abajo a la derecha, junto al escenario, pulsa <strong>Elige un fondo</strong> y añade uno de paisaje, por ejemplo una montaña.</p></div></li>
+    <li><div><p>Selecciona el gato y abre la pestaña <strong>Sonidos</strong>. Ya tiene un maullido: pulsa el triángulo para escucharlo.</p></div></li>
+    <li><div><p>Pulsa <strong>Elige un sonido</strong> (abajo a la izquierda), entra en la categoría Animales y añade el sonido de un pájaro o de un perro.</p></div></li>
+  </ol>
+  <h3>Parte D · Editar disfraces</h3>
+  <ol class="steps">
+    <li><div><p>Con el murciélago seleccionado, abre la pestaña <strong>Disfraces</strong>. Tiene varios disfraces: las alas cambian de posición de uno a otro. Si los vas pulsando uno tras otro, parece que vuela. Así se hacen las animaciones.</p></div></li>
+    <li><div><p>Prueba las herramientas del editor, que funciona como Paint: pincel, línea, rectángulo y texto. Escribe «Hola». Luego deshaz los cambios con <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> en Mac).</p></div></li>
+    <li><div><p>Haz el murciélago <strong>más pequeño</strong>: selecciónalo entero con la flecha y arrastra una esquina. Luego arrástralo para que su centro quede sobre la cruz del centro del lienzo.</p></div></li>
+    <li><div><p>Pasa al <strong>segundo disfraz</strong> y haz lo mismo, con el mismo tamaño y la misma posición. Si no, al cambiar de disfraz el murciélago dará saltos o cambiará de tamaño.</p></div></li>
+    <li><div><p>Pinta el murciélago de <strong>rojo</strong> con la herramienta de relleno (el bote de pintura), en todos sus disfraces.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En el vídeo las pestañas están a la derecha y se llaman Programas, Disfraces y Sonidos. En Scratch 3 están arriba a la izquierda: Código, Disfraces y Sonidos. El botón «fijar el centro del disfraz» ya no existe: basta con colocar el dibujo sobre la cruz del centro del lienzo.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Hay cuatro objetos: gato, murcielago, pastel (Cake) y Donut.</li><li>Todos los disfraces del murciélago son rojos y del mismo tamaño. Al pasar de uno a otro, no se mueve de sitio.</li><li>El escenario tiene fondo.</li></ul></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#ffab19">
+  <div class="lesson-head"><div class="num">3</div><h2>Coordenadas y movimiento con las flechas</h2><p class="goal">Vas a colocar cada objeto en su sitio al pulsar la bandera verde y a mover el gato con el teclado.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 3 · Eventos, coordenadas y mover al gato (≈8 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/vMVBzr_rh2g" title="Vídeo 3 · Eventos, coordenadas y mover al gato (≈8 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=vMVBzr_rh2g" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Entender el escenario</h3>
+  <ol class="steps">
+    <li><div><p>Pulsa <strong>Elige un fondo</strong> y añade el fondo <strong>Xy-grid</strong>. Muestra los ejes de coordenadas.</p></div></li>
+    <li><div><p>Esconde el murciélago, el pastel y el donut (botón del ojo cerrado) para ver mejor la cuadrícula.</p></div></li>
+    <li><div><p>Fíjate en los números del fondo:</p>
+      <div class="tbl"><table>
+        <tr><th>Eje</th><th>Mínimo</th><th>Centro</th><th>Máximo</th><th>Tamaño</th></tr>
+        <tr><td><strong>x</strong> (horizontal)</td><td style="font-family:var(--mono)">-240</td><td style="font-family:var(--mono)">0</td><td style="font-family:var(--mono)">240</td><td>480 de ancho</td></tr>
+        <tr><td><strong>y</strong> (vertical)</td><td style="font-family:var(--mono)">-180</td><td style="font-family:var(--mono)">0</td><td style="font-family:var(--mono)">180</td><td>360 de alto</td></tr>
+      </table></div>
+      <p>El centro del escenario es el punto <code>(0, 0)</code>.</p></div></li>
+  </ol>
+  <h3>Parte B · Colocar cada objeto al empezar</h3>
+  <p>La bandera verde arranca el juego. Los bloques amarillos de <strong>Eventos</strong> sirven para decir <em>cuándo</em> pasa algo.</p>
+  <ol class="steps">
+    <li><div><p>Selecciona el <strong>gato</strong> y monta este programa. Los bloques deben quedar encajados, no sueltos:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>0</i> y: <i>0</i></span>
+      </div>
+      <p>Arrastra el gato a una esquina y pulsa la bandera verde. Debe volver al centro.</p></div></li>
+    <li><div><p>Para copiar el programa en otro objeto, arrástralo desde el área de programación hasta el murciélago en la lista de objetos y suéltalo. Haz lo mismo con el pastel y el donut.</p></div></li>
+    <li><div><p>Muestra otra vez los tres objetos y cambia los números de cada uno:</p>
+      <div class="tbl"><table>
+        <tr><th>Objeto</th><th>x</th><th>y</th><th>Zona del escenario</th></tr>
+        <tr><td>gato</td><td style="font-family:var(--mono)">0</td><td style="font-family:var(--mono)">0</td><td>centro</td></tr>
+        <tr><td>murcielago</td><td style="font-family:var(--mono)">200</td><td style="font-family:var(--mono)">100</td><td>arriba a la derecha</td></tr>
+        <tr><td>pastel</td><td style="font-family:var(--mono)">200</td><td style="font-family:var(--mono)">-100</td><td>abajo a la derecha</td></tr>
+        <tr><td>Donut</td><td style="font-family:var(--mono)">-200</td><td style="font-family:var(--mono)">-100</td><td>abajo a la izquierda</td></tr>
+      </table></div></div></li>
+  </ol>
+  <h3>Parte C · Mover el gato con las flechas</h3>
+  <ol class="steps">
+    <li><div><p>En el gato, añade este programa. Primero apunta, después se mueve. Programar es dar instrucciones en orden.</p>
+      <div class="script">
+        <span class="blk hat events">al presionar tecla <i>flecha derecha</i></span>
+        <span class="blk motion">apuntar en dirección <i>90</i></span>
+        <span class="blk motion">mover <i>10</i> pasos</span>
+      </div></div></li>
+    <li><div><p>Haz clic derecho en el primer bloque, pulsa <strong>Duplicar</strong> y crea las otras tres flechas:</p>
+      <div class="tbl"><table>
+        <tr><th>Tecla</th><th>apuntar en dirección</th></tr>
+        <tr><td>flecha derecha</td><td style="font-family:var(--mono)">90</td></tr>
+        <tr><td>flecha izquierda</td><td style="font-family:var(--mono)">-90</td></tr>
+        <tr><td>flecha arriba</td><td style="font-family:var(--mono)">0</td></tr>
+        <tr><td>flecha abajo</td><td style="font-family:var(--mono)">180</td></tr>
+      </table></div></div></li>
+    <li><div><p>Prueba la flecha izquierda. El gato se pone <strong>boca abajo</strong> porque tiene el estilo de rotación «todo alrededor». Cámbialo a <strong>izquierda/derecha</strong> (actividad 2, parte B).</p></div></li>
+    <li><div><p>Añade <span class="blk looks">siguiente disfraz</span> al final de cada uno de los cuatro programas de flecha. Ahora el gato parece que anda.</p></div></li>
+    <li><div><p>Añade un último programa al gato:</p>
+      <div class="script">
+        <span class="blk hat events">al presionar tecla <i>espacio</i></span>
+        <span class="blk looks">decir <i>¡Hola!</i></span>
+      </div></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>Para esconder objetos, el vídeo abre una «i» de información. En Scratch 3 los botones del ojo están siempre visibles debajo del escenario. El bloque <em>ir a x: y:</em> ya aparece con la posición actual del objeto: solo tienes que cambiar los números.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Al pulsar la bandera verde, cada objeto va a su posición de la tabla.</li><li>El gato se mueve con las cuatro flechas, no queda boca abajo y mueve las patas.</li><li>Con la barra espaciadora, el gato dice «¡Hola!».</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">4</div><h2>El murciélago te persigue</h2><p class="goal">Vas a usar un bucle y una condición: el murciélago te sigue, bate las alas y te avisa cuando te pilla.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 4 · Bucles y condiciones: juego de persigue (≈4,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/XQMv802TZQQ" title="Vídeo 4 · Bucles y condiciones: juego de persigue (≈4,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=XQMv802TZQQ" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Repetir o por siempre</h3>
+  <p>En la categoría <strong>Control</strong> hay dos bloques que repiten lo que tienen dentro:</p>
+  <div class="tbl"><table>
+    <tr><th>Bloque</th><th>Cuántas veces repite</th></tr>
+    <tr><td><span class="blk control">repetir <i>10</i></span></td><td>El número de veces que indiques. Después, sigue con el bloque de debajo.</td></tr>
+    <tr><td><span class="blk control">por siempre</span></td><td>Sin parar, hasta que se detenga el programa.</td></tr>
+  </table></div>
+  <h3>Parte B · Que te persiga</h3>
+  <ol class="steps">
+    <li><div><p>Si quieres, borra los fondos que ya no uses: clic derecho sobre el fondo, en la pestaña Fondos, y <strong>borrar</strong>.</p></div></li>
+    <li><div><p>Selecciona el <strong>murciélago</strong> y amplía su programa de la bandera verde:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>200</i> y: <i>100</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">apuntar hacia <i>gato</i></span>
+            <span class="blk motion">mover <i>2</i> pasos</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde y mueve el gato con las flechas. El murciélago te sigue a todas partes.</p></div></li>
+  </ol>
+  <h3>Parte C · Que bata las alas</h3>
+  <ol class="steps">
+    <li><div><p>Añade al murciélago un <strong>segundo</strong> programa. Un mismo objeto puede tener varios programas funcionando a la vez.</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk looks">siguiente disfraz</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Prueba el juego. Las alas se mueven demasiado deprisa y no queda bien. Mete el bloque <span class="blk control">esperar <i>0.25</i> segundos</span> debajo de <em>siguiente disfraz</em>, dentro del <em>por siempre</em>.</p></div></li>
+  </ol>
+  <h3>Parte D · ¡Te pillé!</h3>
+  <ol class="steps">
+    <li><div><p>En el primer programa del murciélago, mete este bloque <em>si</em> dentro del <em>por siempre</em>, debajo de <em>mover 2 pasos</em>. El bloque <em>tocando</em> está en <strong>Sensores</strong>. Los bloques que son preguntas tienen forma de hexágono y encajan en el hueco del <em>si</em>.</p>
+      <div class="script">
+        <div class="cblock">
+          <span class="blk control">si <span class="blk sensing">¿tocando <i>gato</i>?</span> entonces</span>
+          <div class="inner">
+            <span class="blk looks">decir <i>¡Te pillé!</i> durante <i>2</i> segundos</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde y deja que el murciélago te alcance.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>El murciélago te persigue sin parar.</li><li>Bate las alas a una velocidad que se ve bien.</li><li>Cuando te toca, dice «¡Te pillé!».</li><li>Sabes explicar la diferencia entre <em>repetir</em> y <em>por siempre</em>.</li></ul></div>
+</section>
+
+<section class="lesson" id="a5" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">5</div><h2>Tiburón, pez y variables</h2><p class="goal">Vas a hacer un juego nuevo: tú eres un pez que come pasteles y un tiburón te persigue cada vez más rápido.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 5 · Números al azar y variables (≈7 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/anzXUgb6rkU" title="Vídeo 5 · Números al azar y variables (≈7 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=anzXUgb6rkU" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Preparar el juego</h3>
+  <ol class="steps">
+    <li><div><p>Crea un proyecto nuevo llamado <code>Tiburón</code>. Borra el gato (clic derecho → <strong>borrar</strong>) y añade los objetos <strong>Shark 2</strong> (tiburón), <strong>Fish</strong> (pez) y <strong>Cake</strong> (pastel). Si quieres, añade un fondo submarino.</p></div></li>
+    <li><div><p>En el <strong>pez</strong>, haz lo mismo que en la actividad 3: una posición de salida con la bandera verde y los cuatro programas de las flechas. Pon el estilo de rotación izquierda/derecha.</p></div></li>
+    <li><div><p>En el <strong>tiburón</strong>, haz lo mismo que en la actividad 4: posición de salida y un <em>por siempre</em> con <em>apuntar hacia Fish</em> y <em>mover 1 pasos</em>. Pruébalo.</p></div></li>
+  </ol>
+  <h3>Parte B · Un pastel que aparece en un sitio al azar</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el <strong>pastel</strong>. Queremos que al empezar vaya a un sitio al azar. El bloque <em>número aleatorio</em> está en <strong>Operadores</strong>. Usa los límites del escenario que viste en la actividad 3:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <span class="blk ops">número aleatorio entre <i>-240</i> y <i>240</i></span> y: <span class="blk ops">número aleatorio entre <i>-180</i> y <i>180</i></span></span>
+      </div>
+      <p>Pulsa varias veces la bandera verde. El pastel sale cada vez en un sitio distinto.</p></div></li>
+    <li><div><p>Ahora haz que el pastel cambie de sitio cuando el pez lo toque. Duplica el bloque <em>ir a</em> del paso anterior para no volver a montarlo:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: (aleatorio -240…240) y: (aleatorio -180…180)</span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tocando <i>Fish</i>?</span> entonces</span>
+              <div class="inner"><span class="blk motion">ir a x: (aleatorio -240…240) y: (aleatorio -180…180)</span></div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+  </ol>
+  <h3>Parte C · Tu primera variable: la velocidad del pez</h3>
+  <p>Una <strong>variable</strong> es un número con nombre que puede cambiar mientras se juega. Vamos a guardar en una variable cuántos pasos da el pez.</p>
+  <ol class="steps">
+    <li><div><p>Ve a <strong>Variables → Crear una variable</strong>. Escribe el nombre <code>velocidad</code> y marca <strong>Para todos los objetos</strong>. Es obligatorio: el pastel también va a cambiar esta variable.</p></div></li>
+    <li><div><p>En el <strong>pez</strong>, añade <span class="blk vars">dar a <i>velocidad</i> el valor <i>10</i></span> al programa de la bandera verde.</p></div></li>
+    <li><div><p>En los cuatro programas de las flechas del pez, arrastra la bolita <span class="blk vars">velocidad</span> al hueco donde pone <em>10</em> en <em>mover 10 pasos</em>.</p></div></li>
+    <li><div><p>En el <strong>pastel</strong>, añade <span class="blk vars">sumar a <i>velocidad</i> <i>1</i></span> dentro del <em>si tocando Fish</em>.</p></div></li>
+    <li><div><p>Juega. Arriba a la izquierda del escenario ves el valor de <code>velocidad</code>, que sube con cada pastel. El pez cada vez es más rápido que el tiburón.</p></div></li>
+  </ol>
+  <h3>Parte D · Dale la vuelta al juego</h3>
+  <p>Ahora el pez es más rápido cada vez y el juego es demasiado fácil. Vamos a hacer que sea el tiburón el que acelere.</p>
+  <ol class="steps">
+    <li><div><p>En el pez, vuelve a poner <em>mover 10 pasos</em> con un número fijo y quita el bloque <em>dar a velocidad el valor</em>.</p></div></li>
+    <li><div><p>En el <strong>tiburón</strong>, añade <span class="blk vars">dar a <i>velocidad</i> el valor <i>1</i></span> al principio. Dentro del <em>por siempre</em>, cambia <em>mover 1 pasos</em> por <em>mover (velocidad) pasos</em>.</p></div></li>
+    <li><div><p>El pastel sigue sumando 1 a <code>velocidad</code>. Ahora cada pastel que comes hace que el tiburón vaya más rápido.</p></div></li>
+  </ol>
+  <h3>Parte E · Fin de la partida</h3>
+  <ol class="steps">
+    <li><div><p>El tiburón tiene varios disfraces. Deja su programa de la bandera verde así:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk looks">cambiar disfraz a <i>shark2-a</i></span>
+        <span class="blk vars">dar a <i>velocidad</i> el valor <i>1</i></span>
+        <span class="blk motion">ir a x: <i>-200</i> y: <i>150</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">apuntar hacia <i>Fish</i></span>
+            <span class="blk motion">mover <span class="blk vars">velocidad</span> pasos</span>
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tocando <i>Fish</i>?</span> entonces</span>
+              <div class="inner">
+                <span class="blk looks">cambiar disfraz a <i>shark2-b</i></span>
+                <span class="blk control">detener <i>todos</i></span>
+              </div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Juega hasta que el tiburón te coma. Debe abrir la boca y el juego debe pararse.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En el vídeo las variables están en la categoría «Datos» y los disfraces del tiburón se llaman «shark-a» y «shark-b». En Scratch 3 las variables están en <strong>Variables</strong>. Usa los nombres de disfraz que veas en la pestaña Disfraces de tu tiburón.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>El pastel sale en un sitio al azar y cambia de sitio cuando te lo comes.</li><li>La variable <code>velocidad</code> sube 1 con cada pastel y el tiburón va cada vez más rápido.</li><li>Al pulsar otra vez la bandera, <code>velocidad</code> vuelve a 1 y el tiburón a su primer disfraz.</li><li>Cuando el tiburón te alcanza, cambia de disfraz y el juego se para.</li></ul></div>
+  <div class="check"><h3>Retos</h3><ul>
+    <li>Crea una variable <code>puntos</code> que suba 1 con cada pastel. Al empezar, debe valer 0.</li>
+    <li>Pon un sonido cuando te comes un pastel y otro cuando te pilla el tiburón.</li>
+    <li>Haz que el pez mueva la cola: añade <em>siguiente disfraz</em> a los programas de las flechas.</li>
+  </ul></div>
+</section>
+
+<footer>
+  <p>Actividades basadas en el tutorial <a href="https://www.programoergosum.es/tutoriales/introduccion-a-scratch-2" target="_blank" rel="noopener">«Iniciación a la programación con Scratch 2.0»</a> de la Asociación Programo Ergo Sum y en sus vídeos, con licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>
+  <p>Cambios: los vídeos se han convertido en actividades paso a paso adaptadas a Scratch 3, con bloques de ejemplo, comprobaciones y retos. Esta adaptación se comparte con la misma licencia.</p>
+</footer>
+</div>
+
+</body></html>
