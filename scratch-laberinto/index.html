@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laberinto en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 5 actividades · 5 vídeos</div>
+  <h1>Scratch: el videojuego del laberinto</h1>
+  <p class="lead">Llevas a Gobo por un laberinto hasta la salida roja. No puedes tocar las paredes negras y tienes que esquivar tres bolas que suben y bajan. Si tocas una pared o una bola, vuelves al principio. Mira el vídeo de cada actividad y después haz los pasos.</p>
+  <ul class="toc">
+    <li><a href="#a0"><b>0</b> Preparar el proyecto</a></li>
+    <li><a href="#a1"><b>1</b> El personaje</a></li>
+    <li><a href="#a2"><b>2</b> Las paredes</a></li>
+    <li><a href="#a3"><b>3</b> Los obstáculos</a></li>
+    <li><a href="#a4"><b>4</b> Ganar y perder</a></li>
+    <li><a href="#a5"><b>5</b> Retos</a></li>
+  </ul>
+  <div class="note">
+    <strong>Los vídeos usan Scratch 2 y tú vas a usar Scratch 3</strong>
+    <p>Los bloques son los mismos pero la pantalla está organizada de otra forma: los bloques a la izquierda, el área de programación en el centro y el escenario arriba a la derecha. Cuando algo sea distinto, lo verás en un recuadro amarillo.</p>
+  </div>
+</header>
+
+<section class="lesson" id="a0" style="--c:#5cb1d6">
+  <div class="lesson-head"><div class="num">0</div><h2>Preparar el proyecto</h2><p class="goal">Vas a empezar con el laberinto ya dibujado. Así no tienes que hacerlo tú.</p></div>
+  <ol class="steps">
+    <li><div><p>Inicia sesión en <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>.</p></div></li>
+    <li><div><p>Abre el proyecto <a href="https://scratch.mit.edu/projects/118054460/" target="_blank" rel="noopener">Laberinto (base)</a> y pulsa <strong>Reinventar</strong>. Se crea una copia en tu cuenta con el fondo del laberinto y las imágenes que necesitas.</p></div></li>
+    <li><div><p>Cambia el título del proyecto a <code>Laberinto – tu nombre</code> y guárdalo (<strong>Archivo → Guardar ahora</strong>).</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>El proyecto aparece en <strong>Mis cosas</strong> con tu título.</li><li>En el escenario ves el laberinto.</li></ul></div>
+</section>
+
+<section class="lesson" id="a1" style="--c:#4c97ff">
+  <div class="lesson-head"><div class="num">1</div><h2>El fondo y el personaje</h2><p class="goal">Vas a marcar la salida, añadir a Gobo con un tamaño que quepa por los pasillos y moverlo con las flechas.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 1 · Fondo, personaje y movimiento (≈5,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/Xp1iSsKxop4" title="Vídeo 1 · Fondo, personaje y movimiento (≈5,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=Xp1iSsKxop4" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · El fondo y la salida</h3>
+  <ol class="steps">
+    <li><div><p>Pulsa el escenario (a la derecha de la lista de objetos) y abre la pestaña <strong>Fondos</strong>. Cambia el nombre del fondo a <code>fondo</code>. Poner nombres claros es una buena costumbre al programar.</p></div></li>
+    <li><div><p>Busca la salida del laberinto. Si no está marcada en rojo, elige la herramienta <strong>Línea</strong>, pon el color rojo, aumenta el grosor y dibuja una línea en la salida.</p>
+      <p class="muted">El rojo solo puede usarse en la salida. Más adelante el juego sabrá que has ganado cuando Gobo toque ese color.</p></div></li>
+  </ol>
+  <h3>Parte B · Añadir a Gobo y ajustar su tamaño</h3>
+  <ol class="steps">
+    <li><div><p>Pulsa <strong>Elige un objeto</strong> (abajo a la derecha) y añade a <strong>Gobo</strong>. Si ya hay un gato, bórralo (clic derecho → <strong>borrar</strong>).</p></div></li>
+    <li><div><p>Gobo es demasiado grande para los pasillos. Haz clic en el campo <strong>Tamaño</strong>, debajo del escenario, y escribe un número más pequeño, por ejemplo <code>35</code>. Prueba hasta que quepa en los pasillos con un poco de margen.</p></div></li>
+    <li><div><p>Pulsa en <strong>Dirección</strong> y elige el estilo de rotación <strong>izquierda/derecha</strong>. Así Gobo no se pondrá boca abajo.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En el vídeo Gobo se encoge con la herramienta «encoger». En Scratch 3 esa herramienta no existe: se usa el campo <em>Tamaño</em>. Es incluso mejor, porque cambia todos los disfraces a la vez y no mueve el centro del personaje.</p></div>
+  <h3>Parte C · La posición de salida</h3>
+  <ol class="steps">
+    <li><div><p>Arrastra a Gobo hasta la <strong>entrada</strong> del laberinto, en el lado contrario a la salida roja.</p></div></li>
+    <li><div><p>Ve a <strong>Movimiento</strong>. El bloque <em>ir a x: y:</em> ya tiene la posición actual de Gobo. Móntalo así:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>(x de la entrada)</i> y: <i>(y de la entrada)</i></span>
+      </div></div></li>
+    <li><div><p><strong>Apunta estos dos números</strong> en tu cuaderno. Los vas a necesitar en las actividades 2 y 4.</p></div></li>
+    <li><div><p>Arrastra a Gobo a otro sitio y pulsa la bandera verde. Debe volver a la entrada.</p></div></li>
+  </ol>
+  <h3>Parte D · Moverse con las flechas</h3>
+  <ol class="steps">
+    <li><div><p>Monta este programa en Gobo:</p>
+      <div class="script">
+        <span class="blk hat events">al presionar tecla <i>flecha arriba</i></span>
+        <span class="blk motion">apuntar en dirección <i>0</i></span>
+        <span class="blk motion">mover <i>10</i> pasos</span>
+      </div></div></li>
+    <li><div><p>Duplícalo tres veces (clic derecho → <strong>Duplicar</strong>) y cambia la tecla y la dirección:</p>
+      <div class="tbl"><table>
+        <tr><th>Tecla</th><th>apuntar en dirección</th></tr>
+        <tr><td>flecha arriba</td><td style="font-family:var(--mono)">0</td></tr>
+        <tr><td>flecha abajo</td><td style="font-family:var(--mono)">180</td></tr>
+        <tr><td>flecha derecha</td><td style="font-family:var(--mono)">90</td></tr>
+        <tr><td>flecha izquierda</td><td style="font-family:var(--mono)">-90</td></tr>
+      </table></div></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>La salida está marcada en rojo y ese color no aparece en ninguna otra parte del laberinto.</li><li>Gobo cabe por los pasillos.</li><li>Con la bandera verde, Gobo va a la entrada.</li><li>Se mueve con las cuatro flechas y no se pone boca abajo.</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#ffab19">
+  <div class="lesson-head"><div class="num">2</div><h2>Detectar las paredes</h2><p class="goal">Si Gobo toca una pared negra, vuelve deslizándose a la entrada.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 2 · Sensores: tocar el color de la pared (≈3,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/GwMnc4xls-E" title="Vídeo 2 · Sensores: tocar el color de la pared (≈3,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=GwMnc4xls-E" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <p>El juego tiene que comprobar todo el rato si Gobo toca una pared. Para eso usamos un bucle <em>por siempre</em> con una condición <em>si</em> dentro.</p>
+  <ol class="steps">
+    <li><div><p>Amplía el programa de la bandera verde de Gobo:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>(entrada)</i> y: <i>(entrada)</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tocando el color <i>■ negro</i>?</span> entonces</span>
+              <div class="inner">
+                <span class="blk motion">deslizar en <i>1</i> segs a x: <i>(entrada)</i> y: <i>(entrada)</i></span>
+              </div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Para elegir el color del sensor, pulsa el cuadradito de color del bloque <em>¿tocando el color?</em> (en <strong>Sensores</strong>). Abajo del todo pulsa el <strong>cuentagotas</strong> y haz clic sobre una pared del laberinto. El cuadradito se pondrá del mismo color que la pared.</p></div></li>
+    <li><div><p>En el bloque <em>deslizar</em>, escribe los números de la entrada que apuntaste en la actividad 1. Así Gobo vuelve poco a poco en vez de saltar de golpe.</p></div></li>
+    <li><div><p>Prueba: pulsa la bandera verde y lleva a Gobo contra una pared.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En Scratch 2 el color se elegía haciendo clic directamente en el escenario. En Scratch 3 hay que pulsar primero el cuentagotas, que está abajo en el selector de color.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Al tocar una pared, Gobo vuelve deslizándose a la entrada.</li><li>Mientras camina por un pasillo sin tocar las paredes, no pasa nada. Si vuelve solo sin tocar nada, el color del sensor no es exactamente el de las paredes: elígelo otra vez con el cuentagotas.</li></ul></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#cf63cf">
+  <div class="lesson-head"><div class="num">3</div><h2>Los obstáculos</h2><p class="goal">Vas a poner tres bolas que suben y bajan sin parar por los pasillos.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 3 · Bolas que se mueven (≈5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/WqFuPVvBN7k" title="Vídeo 3 · Bolas que se mueven (≈5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=WqFuPVvBN7k" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · La primera bola</h3>
+  <ol class="steps">
+    <li><div><p>Añade el objeto <strong>Ball</strong> y cámbiale el nombre a <code>bola1</code>.</p></div></li>
+    <li><div><p>Baja su <strong>Tamaño</strong> hasta que ocupe casi todo el ancho de un pasillo. Así Gobo no podrá pasar a su lado sin tocarla.</p></div></li>
+    <li><div><p>Elige un pasillo vertical por el que tenga que pasar Gobo. Arrastra la bola a la <strong>parte de arriba</strong> del pasillo y apunta su x y su y.</p></div></li>
+    <li><div><p>Ahora arrástrala a la <strong>parte de abajo</strong> del mismo pasillo y apunta su y. La x no cambia, porque la bola solo se mueve en vertical.</p></div></li>
+    <li><div><p>Monta este programa con tus números:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>(x)</i> y: <i>(y arriba)</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">deslizar en <i>5</i> segs a x: <i>(x)</i> y: <i>(y abajo)</i></span>
+            <span class="blk motion">deslizar en <i>5</i> segs a x: <i>(x)</i> y: <i>(y arriba)</i></span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde. La bola debe bajar en 5 segundos y volver a subir sin parar. Si es demasiado lenta o demasiado rápida, cambia los segundos.</p></div></li>
+  </ol>
+  <h3>Parte B · Dos bolas más</h3>
+  <ol class="steps">
+    <li><div><p>Haz clic derecho sobre <code>bola1</code> en la lista de objetos y pulsa <strong>duplicar</strong>. La copia tiene el mismo programa. Cámbiale el nombre a <code>bola2</code>.</p></div></li>
+    <li><div><p>En la pestaña <strong>Disfraces</strong>, elige otro color para que se distinga de la primera bola.</p></div></li>
+    <li><div><p>Elige otro pasillo y repite los pasos 3 a 5 de la parte A con sus números.</p></div></li>
+    <li><div><p>Haz lo mismo para crear <code>bola3</code> en un tercer pasillo.</p></div></li>
+  </ol>
+  <div class="note"><strong>Nota</strong><p>Duplicar objetos es la forma más sencilla de empezar. En juegos más avanzados se hace con <strong>clones</strong>: un solo objeto que se copia a sí mismo mientras se juega. Lo veremos más adelante.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Hay tres bolas de colores distintos, cada una en un pasillo distinto.</li><li>Todas suben y bajan sin parar y no se meten dentro de las paredes.</li><li>Gobo puede esquivarlas si espera el momento adecuado.</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">4</div><h2>Ganar y perder</h2><p class="goal">Si una bola toca a Gobo, vuelve al principio. Si llega a la salida roja, ha ganado.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 4 · Detectar las bolas y la salida (≈3,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/cUYxQtrU-L4" title="Vídeo 4 · Detectar las bolas y la salida (≈3,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=cUYxQtrU-L4" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Tocar una bola</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona a <strong>Gobo</strong>. Queremos comprobar con una sola condición si toca la bola 1, la bola 2 <em>o</em> la bola 3. El bloque <span class="blk ops">&lt; &gt; o &lt; &gt;</span> está en <strong>Operadores</strong>.</p></div></li>
+    <li><div><p>Como hay tres condiciones y el bloque <em>o</em> solo tiene dos huecos, mete un <em>o</em> dentro de otro:</p>
+      <div class="script">
+        <span class="blk ops">&lt;¿tocando <i>bola1</i>?&gt; o &lt; &lt;¿tocando <i>bola2</i>?&gt; o &lt;¿tocando <i>bola3</i>?&gt; &gt;</span>
+      </div></div></li>
+    <li><div><p>Mete un nuevo <em>si</em> dentro del <em>por siempre</em> de Gobo, debajo del <em>si</em> de las paredes:</p>
+      <div class="script">
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops">¿tocando bola1? o ¿tocando bola2? o ¿tocando bola3?</span> entonces</span>
+          <div class="inner">
+            <span class="blk motion">ir a x: <i>(entrada)</i> y: <i>(entrada)</i></span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Prueba a dejar que te toque una bola. Si funciona con una, funciona con las tres, porque están en la misma condición.</p></div></li>
+  </ol>
+  <h3>Parte B · Llegar a la salida</h3>
+  <ol class="steps">
+    <li><div><p>Añade un tercer <em>si</em> dentro del mismo <em>por siempre</em>. Con el cuentagotas, elige el color <strong>rojo</strong> de la salida:</p>
+      <div class="script">
+        <div class="cblock">
+          <span class="blk control">si <span class="blk sensing">¿tocando el color <i>■ rojo</i>?</span> entonces</span>
+          <div class="inner">
+            <span class="blk looks">decir <i>¡He ganado!</i></span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Para probarlo sin recorrer todo el laberinto, arrastra a Gobo cerca de la salida con el ratón y termina el camino con las flechas.</p></div></li>
+  </ol>
+  <p class="muted">Al final, el <em>por siempre</em> de Gobo tiene tres <em>si</em>: paredes, bolas y salida.</p>
+  <div class="check"><h3>Comprueba</h3><ul><li>Si te toca cualquiera de las tres bolas, vuelves a la entrada.</li><li>Las paredes siguen funcionando.</li><li>Al llegar a la salida, Gobo dice «¡He ganado!».</li><li>Has guardado el proyecto.</li></ul></div>
+</section>
+
+<section class="lesson" id="a5" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">5</div><h2>Retos</h2><p class="goal">Para quien termine. Cada reto se puede hacer por separado.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 5 · El reto de las paredes (1 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/Tdvnv3LKmGE" title="Vídeo 5 · El reto de las paredes (1 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=Tdvnv3LKmGE" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <div class="check">
+    <h3>Reto 1 · Paredes que no se atraviesan</h3>
+    <p>Ahora, al tocar una pared, Gobo vuelve a la entrada. Cambia el juego para que la pared lo frene y Gobo se quede donde está, como en el vídeo. Solo tienes que cambiar el programa de Gobo.</p>
+    <p class="muted">Pista: después de <em>mover 10 pasos</em>, si Gobo toca la pared, ¿qué movimiento lo dejaría donde estaba antes?</p>
+  </div>
+  <div class="check">
+    <h3>Reto 2 · Temporizador de 60 segundos</h3>
+    <p>Tienes 60 segundos para llegar a la salida. Si se acaba el tiempo, pierdes. ¿Cuál es tu récord?</p>
+    <p class="muted">Pista: crea una variable <code>tiempo</code> que empiece en 60 y baje 1 cada segundo. Cuando llegue a 0, detén el juego.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 3 · Visión limitada</h3>
+    <p>Haz que Gobo solo vea un poco del laberinto a su alrededor y que el resto quede oscuro.</p>
+    <p class="muted">Pista: piensa en un objeto nuevo que tape casi todo el escenario, tenga un agujero en el centro y siga a Gobo a todas partes.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Actividades basadas en el tutorial <a href="https://www.programoergosum.es/tutoriales/videojuego-de-laberinto-con-scratch-2" target="_blank" rel="noopener">«Videojuego del laberinto con Scratch 2.0»</a> de la Asociación Programo Ergo Sum y en sus vídeos, con licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>
+  <p>Cambios: los vídeos se han convertido en actividades paso a paso adaptadas a Scratch 3, con bloques de ejemplo, comprobaciones y pistas para los retos. Esta adaptación se comparte con la misma licencia.</p>
+</footer>
+</div>
+
+</body></html>
