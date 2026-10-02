@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arkanoid en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 4 actividades · 3 vídeos</div>
+  <h1>Scratch: Arkanoid</h1>
+  <p class="lead">Rompe todos los ladrillos con la pelota. La pelota rebota en las paredes y en tu nave, pero si cae al fondo de la pantalla, pierdes. Aprenderás a usar <strong>clones con bucles anidados</strong>, <strong>mensajes reutilizables</strong> y <strong>variables</strong>. Mira el vídeo de cada actividad y después haz los pasos.</p>
+  <ul class="toc">
+    <li><a href="#a0"><b>0</b> Preparar</a></li>
+    <li><a href="#a1"><b>1</b> Escenario, pelota y nave</a></li>
+    <li><a href="#a2"><b>2</b> Los ladrillos</a></li>
+    <li><a href="#a3"><b>3</b> Velocidad y puntos</a></li>
+    <li><a href="#a4"><b>4</b> Arreglos y retos</a></li>
+  </ul>
+  <div class="note">
+    <strong>Los vídeos usan Scratch 2 y tú vas a usar Scratch 3</strong>
+    <p>Los bloques son los mismos pero la pantalla está organizada de otra forma: los bloques a la izquierda, el área de programación en el centro y el escenario arriba a la derecha. Cuando algo sea distinto, lo verás en un recuadro amarillo.</p>
+  </div>
+</header>
+
+<section class="lesson" id="a0" style="--c:#5cb1d6">
+  <div class="lesson-head"><div class="num">0</div><h2>Preparar el proyecto</h2><p class="goal">Vas a empezar con una copia del proyecto base, que trae la pelota, la nave y los ladrillos.</p></div>
+  <ol class="steps">
+    <li><div><p>Inicia sesión en <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>.</p></div></li>
+    <li><div><p>Abre el proyecto <a href="https://scratch.mit.edu/projects/147152819/" target="_blank" rel="noopener">Arkanoid (base)</a> y pulsa <strong>Reinventar</strong>.</p></div></li>
+    <li><div><p>Cambia el título a <code>Arkanoid – tu nombre</code> y guárdalo.</p></div></li>
+    <li><div><p>Mira qué trae: fondos, objetos y disfraces. Si algo ya existe, no lo dibujes otra vez: solo revisa que tenga el nombre que se indica en cada paso.</p></div></li>
+  </ol>
+</section>
+
+<section class="lesson" id="a1" style="--c:#9966ff">
+  <div class="lesson-head"><div class="num">1</div><h2>Escenario, pelota y nave</h2><p class="goal">Vas a tener una pelota que rebota por toda la pantalla, una nave que sigue al ratón y una partida que termina si la pelota cae al fondo.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 1 · Escenario, pelota y nave (≈14 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/dddeFS44f-E" title="Vídeo 1 · Escenario, pelota y nave (≈14 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=dddeFS44f-E" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · El escenario y el «suelo» de color</h3>
+  <p>El bloque <em>¿tocando borde?</em> no distingue si el borde es el de abajo o el de arriba. Para saber que la pelota ha caído, pintamos una franja en el borde de abajo de un color que no aparezca en ningún otro sitio. Si la pelota toca ese color, la partida se acaba.</p>
+  <ol class="steps">
+    <li><div><p>Selecciona el <strong>escenario</strong> → pestaña <strong>Fondos</strong>. Llama al fondo principal <code>escenario</code>. Con el rectángulo relleno, dibuja una franja fina a lo largo de todo el borde de <strong>abajo</strong>, de un color único (por ejemplo, rojo).</p></div></li>
+    <li><div><p>Duplica el fondo y escribe GAME OVER en grande. Llámalo <code>game over</code>. Duplícalo otra vez, escribe YOU WIN y llámalo <code>win</code>.</p></div></li>
+    <li><div><p>Programa el escenario. Es el punto de partida del juego. Crea los mensajes <code>comienza juego</code>, <code>game over</code> y <code>win</code>:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk looks">cambiar fondo a <i>escenario</i></span>
+        <span class="blk control">esperar <i>4</i> segundos</span>
+        <span class="blk events">enviar <i>comienza juego</i></span>
+      </div>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>game over</i></span>
+        <span class="blk looks">cambiar fondo a <i>game over</i></span>
+        <span class="blk control">detener <i>todos</i></span>
+      </div>
+      <p class="muted">La espera de 4 segundos deja tiempo para que se construya el muro de ladrillos (actividad 2) antes de que salga la pelota. El programa de <em>win</em> lo harás en la actividad 3.</p></div></li>
+  </ol>
+  <h3>Parte B · La pelota</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el objeto <code>pelota</code>. Al pulsar la bandera, colócala abajo en el centro y apúntala hacia arriba con un ángulo al azar:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>0</i> y: <i>-120</i></span>
+        <span class="blk motion">apuntar en dirección <span class="blk ops">número aleatorio entre <i>-35</i> y <i>35</i></span></span>
+      </div>
+      <p class="muted">En Scratch, 0 es hacia arriba. Entre -35 y 35 la pelota sale hacia arriba, un poco inclinada a un lado o al otro.</p></div></li>
+    <li><div><p>Cuando empieza el juego, la pelota se mueve sin parar y rebota en los bordes. Si toca el color del suelo, la partida termina:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">mover <i>5</i> pasos</span>
+            <span class="blk motion">rebotar si toca un borde</span>
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tocando el color <i>■ rojo</i>?</span> entonces</span>
+              <div class="inner"><span class="blk events">enviar <i>game over</i></span></div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div>
+      <p class="muted">Elige el color del sensor con el cuentagotas, haciendo clic sobre la franja del suelo.</p></div></li>
+  </ol>
+  <h3>Parte C · La nave sigue al ratón</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el objeto <code>nave</code> y programa:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>0</i> y: <i>-160</i></span>
+      </div>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner"><span class="blk motion">dar a x el valor <span class="blk sensing">posición x del ratón</span></span></div>
+          <div class="foot"></div>
+        </div>
+      </div>
+      <p class="muted">Solo se copia la x del ratón. La y no cambia, así que la nave solo se mueve en horizontal.</p></div></li>
+  </ol>
+  <h3>Parte D · Rebotar en la nave con un mensaje «rebota»</h3>
+  <p>La pelota tiene que rebotar en la nave y, más adelante, también en los ladrillos. En vez de programar el rebote dos veces, lo programamos <strong>una sola vez</strong> en un mensaje <code>rebota</code> y lo enviamos desde los dos sitios.</p>
+  <ol class="steps">
+    <li><div><p>En la <strong>pelota</strong>, añade el programa del rebote:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>rebota</i></span>
+        <span class="blk motion">apuntar en dirección <span class="blk ops"><span class="blk ops">180 − <span class="blk motion">dirección</span></span> + <span class="blk ops">número aleatorio entre <i>-15</i> y <i>15</i></span></span></span>
+        <span class="blk motion">mover <i>5</i> pasos</span>
+      </div>
+      <p class="muted">Restar la dirección de 180 refleja la pelota en vertical: si subía, ahora baja con la misma inclinación, y al revés. El número al azar hace que el rebote nunca sea exactamente igual. El <em>mover</em> del final la separa de lo que ha tocado para que no se quede enganchada (lo verás en la actividad 4).</p></div></li>
+    <li><div><p>En el <em>por siempre</em> de la pelota, añade:</p>
+      <div class="script">
+        <div class="cblock">
+          <span class="blk control">si <span class="blk sensing">¿tocando <i>nave</i>?</span> entonces</span>
+          <div class="inner"><span class="blk events">enviar <i>rebota</i></span></div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+  </ol>
+  <div class="note"><strong>Sobre este vídeo</strong><p>Los subtítulos automáticos del vídeo 1 son casi ilegibles. Si no entiendes algo, guíate por los bloques de esta página, que explican lo mismo que el vídeo.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>A los 4 segundos de pulsar la bandera, la pelota sale hacia arriba con un ángulo distinto cada vez.</li><li>La nave sigue al ratón de lado a lado.</li><li>La pelota rebota en las paredes y en la nave.</li><li>Si la pelota cae al suelo, aparece GAME OVER.</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#ffab19">
+  <div class="lesson-head"><div class="num">2</div><h2>El muro de ladrillos</h2><p class="goal">Un solo objeto <code>bloque</code> va a crear 60 ladrillos (5 filas de 12) con clones y dos bucles, uno dentro del otro.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 2 · Ladrillos con clones y bucle anidado (≈8,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/R1J6csAkbfs" title="Vídeo 2 · Ladrillos con clones y bucle anidado (≈8,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=R1J6csAkbfs" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Un ladrillo, cinco colores</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el objeto <code>bloque</code>. Debe tener cinco disfraces, uno por color. Ponles nombre: <code>amarillo</code>, <code>azul</code>, <code>rojo</code>, <code>rosa</code> y <code>verde</code>, en ese orden. No es obligatorio, pero cuando hay muchos disfraces ayuda a saber cuál es cuál.</p></div></li>
+  </ol>
+  <h3>Parte B · El bucle anidado</h3>
+  <p>Un <strong>bucle anidado</strong> es un bucle dentro de otro. El de dentro recorre las <strong>columnas</strong> (12 ladrillos de izquierda a derecha). El de fuera recorre las <strong>filas</strong> (5 filas de arriba abajo, una por color).</p>
+  <ol class="steps">
+    <li><div><p>Monta este programa en <code>bloque</code>:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk looks">esconder</span>
+        <span class="blk looks">cambiar disfraz a <i>amarillo</i></span>
+        <span class="blk motion">ir a x: <i>-200</i> y: <i>120</i></span>
+        <div class="cblock">
+          <span class="blk control">repetir <i>5</i></span>
+          <div class="inner">
+            <span class="blk motion">dar a x el valor <i>-200</i></span>
+            <div class="cblock">
+              <span class="blk control">repetir <i>12</i></span>
+              <div class="inner">
+                <span class="blk control">crear clon de <i>mí mismo</i></span>
+                <span class="blk motion">sumar a x <i>35</i></span>
+                <span class="blk control">esperar <i>0.05</i> segundos</span>
+              </div>
+              <div class="foot"></div>
+            </div>
+            <span class="blk motion">sumar a y <i>-20</i></span>
+            <span class="blk looks">siguiente disfraz</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Sigue el recorrido. Empieza en (-200, 120) y crea 12 clones, moviéndose 35 a la derecha cada vez. Al terminar la fila, vuelve a x = -200, baja 20 y cambia al siguiente color. Repite 5 veces: 5 × 12 = <strong>60 ladrillos</strong>.</p></div></li>
+    <li><div><p>El original está escondido porque solo sirve para fabricar clones. Cada clon se tiene que mostrar al nacer:</p>
+      <div class="script">
+        <span class="blk hat control">al comenzar como clon</span>
+        <span class="blk looks">mostrar</span>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde y mira cómo se construye el muro, fila a fila.</p></div></li>
+  </ol>
+  <h3>Parte C · Romper ladrillos</h3>
+  <ol class="steps">
+    <li><div><p>Amplía el programa <em>al comenzar como clon</em>:</p>
+      <div class="script">
+        <span class="blk hat control">al comenzar como clon</span>
+        <span class="blk looks">mostrar</span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tocando <i>pelota</i>?</span> entonces</span>
+              <div class="inner">
+                <span class="blk events">enviar <i>rebota</i></span>
+                <span class="blk control">eliminar este clon</span>
+              </div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div>
+      <p class="muted">Aquí se ve la ventaja del mensaje <code>rebota</code>: el ladrillo no programa el rebote, solo avisa a la pelota de que tiene que rebotar.</p></div></li>
+  </ol>
+  <h3>Parte D · Sonidos (opcional)</h3>
+  <ol class="steps">
+    <li><div><p>En la <strong>pelota</strong>, añade un sonido (por ejemplo <strong>Pop</strong> o <strong>Snap</strong>). Pon <span class="blk sound">iniciar sonido <i>Snap</i></span> al principio del programa <em>al recibir rebota</em>. Sonará cada vez que rebote en la nave o en un ladrillo.</p></div></li>
+  </ol>
+  <div class="note"><strong>¿Por qué el sonido va en la pelota?</strong><p>En el vídeo el sonido se pone en el ladrillo. Pero en Scratch 3, al eliminar un clon se cortan los sonidos que esté reproduciendo, así que a veces no se oye. Si lo pones en la pelota, que nunca se elimina, siempre suena.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Al pulsar la bandera se construye un muro de 5 filas de colores con 12 ladrillos cada una.</li><li>Cuando la pelota toca un ladrillo, el ladrillo desaparece y la pelota rebota.</li></ul></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">3</div><h2>Velocidad, puntos y ganar</h2><p class="goal">La pelota irá cada vez más rápida, un marcador contará los ladrillos rotos y al romper los 60 ganarás.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 3 · Variables: velocidad y puntos (≈6 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/rN-eu3N29FU" title="Vídeo 3 · Variables: velocidad y puntos (≈6 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=rN-eu3N29FU" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <p>Las variables se crean <strong>para todos los objetos</strong> y se ponen a su valor inicial en el <strong>escenario</strong>, al pulsar la bandera verde. Así, todo lo que se prepara al empezar está en un solo sitio.</p>
+  <h3>Parte A · Velocidad</h3>
+  <ol class="steps">
+    <li><div><p>Crea la variable <code>velocidad</code>. En el programa de la bandera verde del <strong>escenario</strong>, añade al principio <span class="blk vars">dar a <i>velocidad</i> el valor <i>5</i></span>.</p></div></li>
+    <li><div><p>En la <strong>pelota</strong>, cambia los dos bloques <em>mover 5 pasos</em> (el del <em>por siempre</em> y el de <em>al recibir rebota</em>) por <span class="blk motion">mover <span class="blk vars">velocidad</span> pasos</span>.</p></div></li>
+    <li><div><p>Dentro del <em>si ¿tocando nave?</em> de la pelota, añade <span class="blk vars">sumar a <i>velocidad</i> <i>0.5</i></span>. Cada vez que la pelota toque la nave irá medio paso más rápida: 5, 5.5, 6…</p></div></li>
+    <li><div><p>Quita la marca de la casilla junto a <code>velocidad</code> en la paleta de Variables para que no se vea en el escenario.</p></div></li>
+  </ol>
+  <h3>Parte B · Puntos</h3>
+  <ol class="steps">
+    <li><div><p>Crea la variable <code>puntos</code>. En el escenario, al pulsar la bandera: <span class="blk vars">dar a <i>puntos</i> el valor <i>0</i></span>.</p></div></li>
+    <li><div><p>En el <strong>bloque</strong>, dentro del <em>si ¿tocando pelota?</em>, añade <span class="blk vars">sumar a <i>puntos</i> <i>1</i></span> <strong>antes</strong> de <em>eliminar este clon</em>. Si va después, nunca llega a ejecutarse, porque el clon ya no existe.</p></div></li>
+    <li><div><p>Haz clic derecho sobre el marcador de <code>puntos</code> en el escenario y elige <strong>lectura grande</strong>.</p></div></li>
+  </ol>
+  <h3>Parte C · Ganar</h3>
+  <ol class="steps">
+    <li><div><p>Hay 5 × 12 = 60 ladrillos. Si <code>puntos</code> llega a 60, los has roto todos. Añade al <strong>escenario</strong>:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <div class="cblock">
+              <span class="blk control">si <span class="blk ops"><span class="blk vars">puntos</span> = <i>60</i></span> entonces</span>
+              <div class="inner"><span class="blk events">enviar <i>win</i></span></div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>win</i></span>
+        <span class="blk looks">cambiar fondo a <i>win</i></span>
+        <span class="blk control">detener <i>todos</i></span>
+      </div></div></li>
+    <li><div><p><strong>Truco para probar:</strong> cambia temporalmente 60 por 5. Así no tienes que romper todo el muro para ver si sale YOU WIN. Cuando funcione, vuelve a poner 60.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En el vídeo las variables están en «Datos». En Scratch 3 están en <strong>Variables</strong>. El bloque «fijar x a» se llama <em>dar a x el valor</em>, y «cambiar x por» se llama <em>sumar a x</em>.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>La pelota acelera cada vez que toca la nave.</li><li>El marcador sube 1 por cada ladrillo roto y vuelve a 0 al pulsar la bandera.</li><li>Al romper todos los ladrillos (o 5, con el truco), aparece YOU WIN.</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">4</div><h2>Arreglos y retos</h2><p class="goal">Arreglar dos fallos habituales y personalizar el juego.</p></div>
+  <div class="check">
+    <h3>Arreglo 1 · La pelota se queda enganchada</h3>
+    <p>A veces la pelota tiembla pegada a la nave o a un ladrillo. Cambia de dirección pero sigue tocando lo mismo, así que vuelve a cambiar de dirección una y otra vez sin moverse.</p>
+    <p><strong>Solución:</strong> es el <em>mover velocidad pasos</em> que pusiste al final de <em>al recibir rebota</em>. Si no lo tienes, añádelo: separa la pelota justo después de cambiar de dirección.</p>
+  </div>
+  <div class="check">
+    <h3>Arreglo 2 · La pelota atraviesa dos ladrillos a la vez</h3>
+    <p>Si la pelota toca dos ladrillos al mismo tiempo, los dos envían <code>rebota</code>. La pelota rebota dos veces, vuelve a su dirección original y sigue de largo.</p>
+    <p class="muted">Pista: ¿podrías hacer que, después de rebotar, la pelota ignore los demás <code>rebota</code> durante un momento? Por ejemplo, con una variable que lo indique.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 1 · Nave con las flechas</h3>
+    <p>Cambia el control de la nave: en vez del ratón, que se mueva con las flechas izquierda y derecha.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 2 · Tu propio estilo</h3>
+    <p>Cambia el aspecto del juego dibujando tus propios disfraces de nave, pelota y ladrillos. No hace falta tocar ningún bloque de programación.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 3 · Ladrillos que se desvanecen</h3>
+    <p>En vez de desaparecer de golpe, haz que el ladrillo gire y se vaya desvaneciendo antes de eliminarse.</p>
+    <p class="muted">Pista: un <em>repetir</em> con <em>girar</em> y <em>sumar al efecto desvanecer</em>, antes de <em>eliminar este clon</em>.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Actividades basadas en el tutorial <a href="https://www.programoergosum.es/tutoriales/videojuego-de-arkanoid-con-scratch-2" target="_blank" rel="noopener">«Videojuego de Arkanoid con Scratch 2.0»</a> de la Asociación Programo Ergo Sum y en sus vídeos, con licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>
+  <p>Cambios: los vídeos se han convertido en actividades paso a paso adaptadas a Scratch 3, con bloques de ejemplo, comprobaciones, arreglos de fallos habituales y pistas para los retos. Esta adaptación se comparte con la misma licencia.</p>
+</footer>
+</div>
+
+</body></html>
