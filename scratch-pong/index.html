@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pong en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 4 actividades · 4 vídeos</div>
+  <h1>Scratch: Pong para dos jugadores</h1>
+  <p class="lead">Dos jugadores, una pelota y dos palas. Si la pelota pasa la pala de un jugador y llega a su lado de la pantalla, el otro jugador gana un punto. Mira el vídeo de cada actividad y después haz los pasos.</p>
+  <ul class="toc">
+    <li><a href="#a0"><b>0</b> Preparar el proyecto</a></li>
+    <li><a href="#a1"><b>1</b> Escenario y cuenta atrás</a></li>
+    <li><a href="#a2"><b>2</b> La pelota</a></li>
+    <li><a href="#a3"><b>3</b> Los jugadores</a></li>
+    <li><a href="#a4"><b>4</b> Puntos y velocidad</a></li>
+    <li><a href="#a5"><b>5</b> Arreglos y retos</a></li>
+  </ul>
+  <div class="note">
+    <strong>Los vídeos usan Scratch 2 y tú vas a usar Scratch 3</strong>
+    <p>Los bloques son los mismos pero la pantalla está organizada de otra forma: los bloques a la izquierda, el área de programación en el centro y el escenario arriba a la derecha. Cuando algo sea distinto, lo verás en un recuadro amarillo.</p>
+  </div>
+</header>
+
+<section class="lesson" id="a0" style="--c:#5cb1d6">
+  <div class="lesson-head"><div class="num">0</div><h2>Preparar el proyecto</h2><p class="goal">Vas a empezar con una copia del proyecto base, que ya trae las imágenes del juego.</p></div>
+  <ol class="steps">
+    <li><div><p>Inicia sesión en <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>.</p></div></li>
+    <li><div><p>Abre el proyecto <a href="https://scratch.mit.edu/projects/118054472/" target="_blank" rel="noopener">Pong 2 Jugadores (base)</a> y pulsa <strong>Reinventar</strong>. Se crea una copia en tu cuenta.</p></div></li>
+    <li><div><p>Cambia el título a <code>Pong – tu nombre</code> y guárdalo (<strong>Archivo → Guardar ahora</strong>).</p></div></li>
+  </ol>
+  <p class="muted">En los vídeos el profesor dibuja todo desde cero. Si tu proyecto base ya trae un fondo o un objeto, no lo dibujes otra vez: revisa que tenga el nombre que se indica en cada paso.</p>
+</section>
+
+<section class="lesson" id="a1" style="--c:#9966ff">
+  <div class="lesson-head"><div class="num">1</div><h2>El escenario y la cuenta atrás</h2><p class="goal">Vas a hacer la pista y una cuenta atrás 3, 2, 1 antes de que empiece cada punto.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 1 · Escenario, fondos y mensajes (≈4,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/-S5TDAg2LIw" title="Vídeo 1 · Escenario, fondos y mensajes (≈4,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=-S5TDAg2LIw" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Los cuatro fondos</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el <strong>escenario</strong> y abre la pestaña <strong>Fondos</strong>. Haz un fondo azul con la pista en blanco: un rectángulo solo con borde y una línea vertical en el centro. Llámalo <code>juego</code>.</p></div></li>
+    <li><div><p>Duplica el fondo tres veces. Con la herramienta <strong>Texto</strong>, escribe un número grande y centrado en cada copia. Ponles estos nombres:</p>
+      <div class="tbl"><table>
+        <tr><th>Nombre del fondo</th><th>Qué muestra</th></tr>
+        <tr><td><code>3</code></td><td>La pista con un 3 grande</td></tr>
+        <tr><td><code>2</code></td><td>La pista con un 2 grande</td></tr>
+        <tr><td><code>1</code></td><td>La pista con un 1 grande</td></tr>
+        <tr><td><code>juego</code></td><td>La pista sin número</td></tr>
+      </table></div></div></li>
+  </ol>
+  <h3>Parte B · Mensajes: inicializar y comienza juego</h3>
+  <p>Un <strong>mensaje</strong> es un aviso que un programa envía a todos los objetos. Cada objeto decide qué hace cuando lo recibe. En este juego usamos dos:</p>
+  <div class="tbl"><table>
+    <tr><th>Mensaje</th><th>Cuándo se envía</th><th>Para qué sirve</th></tr>
+    <tr><td><code>inicializar</code></td><td>Al empezar la partida y después de cada punto</td><td>Coloca todo en su sitio y hace la cuenta atrás.</td></tr>
+    <tr><td><code>comienza juego</code></td><td>Una sola vez, al empezar la partida</td><td>Pone en marcha la pelota y las palas.</td></tr>
+  </table></div>
+  <ol class="steps">
+    <li><div><p>En el <strong>escenario</strong>, ve a <strong>Eventos</strong> y monta este programa. Para crear los mensajes, abre el desplegable de <em>enviar</em> y elige <strong>Nuevo mensaje</strong>:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk looks">cambiar fondo a <i>juego</i></span>
+        <span class="blk events">enviar <i>inicializar</i></span>
+        <span class="blk events">enviar <i>comienza juego</i></span>
+      </div></div></li>
+    <li><div><p>Añade al escenario el programa de la cuenta atrás:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>inicializar</i></span>
+        <span class="blk looks">cambiar fondo a <i>3</i></span>
+        <span class="blk control">esperar <i>1</i> segundos</span>
+        <span class="blk looks">cambiar fondo a <i>2</i></span>
+        <span class="blk control">esperar <i>1</i> segundos</span>
+        <span class="blk looks">cambiar fondo a <i>1</i></span>
+        <span class="blk control">esperar <i>1</i> segundos</span>
+        <span class="blk looks">cambiar fondo a <i>juego</i></span>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde. Debes ver 3, 2, 1 y después la pista vacía. Si los números salen en otro orden, revisa los nombres de los fondos.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>El escenario tiene cuatro fondos llamados <code>3</code>, <code>2</code>, <code>1</code> y <code>juego</code>.</li><li>Con la bandera verde, la cuenta atrás va de 3 a 1 y termina en la pista vacía.</li><li>Existen los mensajes <code>inicializar</code> y <code>comienza juego</code>.</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#4c97ff">
+  <div class="lesson-head"><div class="num">2</div><h2>La pelota</h2><p class="goal">La pelota sale del centro en una dirección al azar y se mueve con la velocidad que indique una variable.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 2 · La pelota y la variable velocidad (≈4,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/mfNMeEo0cHI" title="Vídeo 2 · La pelota y la variable velocidad (≈4,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=mfNMeEo0cHI" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Colocar la pelota</h3>
+  <ol class="steps">
+    <li><div><p>Añade un objeto para la pelota, por ejemplo <strong>Ball</strong>. Llámalo <code>bola</code> y baja su <strong>Tamaño</strong> hasta que sea pequeña, por ejemplo <code>40</code>.</p></div></li>
+    <li><div><p>Programa qué hace la pelota al recibir <em>inicializar</em>. El bloque <em>número aleatorio</em> está en <strong>Operadores</strong>:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>inicializar</i></span>
+        <span class="blk motion">ir a x: <i>0</i> y: <i>0</i></span>
+        <span class="blk motion">apuntar en dirección <span class="blk ops">número aleatorio entre <i>45</i> y <i>135</i></span></span>
+      </div>
+      <p>¿Por qué entre 45 y 135? En Scratch, 90 apunta a la derecha. Entre 45 y 135 la pelota sale hacia la derecha, más o menos en horizontal, y no se queda rebotando arriba y abajo.</p></div></li>
+    <li><div><p>Pulsa varias veces la bandera verde y mira el valor de <strong>Dirección</strong> de la pelota (debajo del escenario). Debe cambiar cada vez.</p></div></li>
+  </ol>
+  <h3>Parte B · La variable velocidad</h3>
+  <p>Durante la cuenta atrás la pelota tiene que estar parada. Después debe moverse. Para eso guardamos su velocidad en una variable.</p>
+  <ol class="steps">
+    <li><div><p>Ve a <strong>Variables → Crear una variable</strong>, llámala <code>velocidad</code> y marca <strong>Para todos los objetos</strong>.</p></div></li>
+    <li><div><p>En el <strong>escenario</strong>, completa el programa <em>al recibir inicializar</em>: pon <span class="blk vars">dar a <i>velocidad</i> el valor <i>0</i></span> <strong>al principio</strong> y <span class="blk vars">dar a <i>velocidad</i> el valor <i>5</i></span> <strong>al final</strong>, después de <em>cambiar fondo a juego</em>.</p></div></li>
+    <li><div><p>En la <strong>pelota</strong>, añade el programa que la hace moverse:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">mover <span class="blk vars">velocidad</span> pasos</span>
+            <span class="blk motion">rebotar si toca un borde</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde. La pelota espera en el centro durante la cuenta atrás (velocidad 0). Después se mueve y rebota en los bordes (velocidad 5).</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>La herramienta «encoger» del vídeo no existe: usa el campo <em>Tamaño</em>. En el vídeo las variables están en «Datos»; en Scratch 3 están en <strong>Variables</strong>.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>La pelota está quieta en el centro durante la cuenta atrás.</li><li>Al terminar la cuenta atrás, sale hacia la derecha con un ángulo que cambia en cada partida.</li><li>Rebota en todos los bordes.</li></ul></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#ffab19">
+  <div class="lesson-head"><div class="num">3</div><h2>Los dos jugadores</h2><p class="goal">Cada jugador mueve su pala arriba y abajo, y la pelota rebota en las palas.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 3 · Las palas y el rebote (≈5,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/ze-cvFf5DfE" title="Vídeo 3 · Las palas y el rebote (≈5,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=ze-cvFf5DfE" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Jugador 1 (rojo, teclas Q y A)</h3>
+  <ol class="steps">
+    <li><div><p>Pasa el ratón por <strong>Elige un objeto</strong> y pulsa el pincel (<strong>Pintar</strong>). Dibuja un rectángulo alto y estrecho relleno de rojo. Llama al objeto <code>player1</code>.</p></div></li>
+    <li><div><p>Monta su programa. Los bloques <em>¿tecla … presionada?</em> están en <strong>Sensores</strong>:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>inicializar</i></span>
+        <span class="blk motion">ir a x: <i>-228</i> y: <i>0</i></span>
+      </div>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tecla <i>q</i> presionada?</span> entonces</span>
+              <div class="inner"><span class="blk motion">sumar a y <i>10</i></span></div>
+              <div class="foot"></div>
+            </div>
+            <div class="cblock">
+              <span class="blk control">si <span class="blk sensing">¿tecla <i>a</i> presionada?</span> entonces</span>
+              <div class="inner"><span class="blk motion">sumar a y <i>-10</i></span></div>
+              <div class="foot"></div>
+            </div>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa la bandera verde y mueve la pala con Q y A.</p></div></li>
+  </ol>
+  <h3>Parte B · Jugador 2 (verde, flechas)</h3>
+  <ol class="steps">
+    <li><div><p>Clic derecho sobre <code>player1</code> → <strong>duplicar</strong>. Llama a la copia <code>player2</code> y píntala de verde en la pestaña Disfraces.</p></div></li>
+    <li><div><p>Cambia tres cosas en sus programas:</p>
+      <div class="tbl"><table>
+        <tr><th>Qué</th><th>player1</th><th>player2</th></tr>
+        <tr><td>Posición x</td><td style="font-family:var(--mono)">-228</td><td style="font-family:var(--mono)">228</td></tr>
+        <tr><td>Tecla para subir</td><td>q</td><td>flecha arriba</td></tr>
+        <tr><td>Tecla para bajar</td><td>a</td><td>flecha abajo</td></tr>
+      </table></div></div></li>
+  </ol>
+  <h3>Parte C · Rebotar en las palas</h3>
+  <p>En la pelota, la dirección indica hacia dónde va: 90 es derecha y -90 es izquierda. Si se multiplica la dirección por -1, la pelota cambia de lado manteniendo la inclinación. Por ejemplo, 60 pasa a -60. Eso es un rebote en una pala vertical.</p>
+  <ol class="steps">
+    <li><div><p>En la <strong>pelota</strong>, mete este <em>si</em> en el <em>por siempre</em>, <strong>entre</strong> <em>mover</em> y <em>rebotar si toca un borde</em>. El bloque <em>dirección</em> está en <strong>Movimiento</strong>, abajo del todo:</p>
+      <div class="script">
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops">&lt;¿tocando <i>player1</i>?&gt; o &lt;¿tocando <i>player2</i>?&gt;</span> entonces</span>
+          <div class="inner">
+            <span class="blk motion">apuntar en dirección <span class="blk ops"><span class="blk motion">dirección</span> * <i>-1</i></span></span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Juega con un compañero: la pelota debe rebotar en las dos palas.</p></div></li>
+  </ol>
+  <div class="note"><strong>Diferente en Scratch 3</strong><p>En el vídeo el bloque se llama «cambiar y por 10». En Scratch 3 se llama <em>sumar a y 10</em>. Para subir se pone un número positivo y para bajar uno negativo.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>La pala roja está a la izquierda y se mueve con Q y A. La verde está a la derecha y se mueve con las flechas.</li><li>Las palas vuelven al centro de su lado al pulsar la bandera verde.</li><li>La pelota rebota en las dos palas.</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">4</div><h2>Puntos y velocidad</h2><p class="goal">Cuando la pelota llega al fondo de un lado, el jugador contrario gana un punto y empieza otra cuenta atrás. Además, la pelota va más rápida cada vez que toca una pala.</p></div>
+  <p class="muted" style="font-size:14px;margin:0">Vídeo 4 · Marcador y velocidad creciente (≈5,5 min)</p><div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/qYQzBsWAmhU" title="Vídeo 4 · Marcador y velocidad creciente (≈5,5 min)" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div><p class="muted" style="font-size:14px">¿No se ve? <a href="https://www.youtube.com/watch?v=qYQzBsWAmhU" target="_blank" rel="noopener">Ábrelo en YouTube</a></p>
+  <h3>Parte A · Las variables de los puntos</h3>
+  <ol class="steps">
+    <li><div><p>Crea dos variables <strong>para todos los objetos</strong>: <code>player 1</code> y <code>player 2</code>. Aparecen en el escenario como marcador. Arrástralas a cada lado de la pista.</p></div></li>
+    <li><div><p>En el programa de la bandera verde del <strong>escenario</strong>, pon al principio <span class="blk vars">dar a <i>player 1</i> el valor <i>0</i></span> y <span class="blk vars">dar a <i>player 2</i> el valor <i>0</i></span>. Así cada partida empieza 0 a 0.</p></div></li>
+  </ol>
+  <h3>Parte B · ¿Qué borde ha tocado?</h3>
+  <p>El bloque <em>¿tocando borde?</em> no dice si el borde es el derecho o el izquierdo. Lo sabemos por la <strong>posición x</strong> de la pelota: cerca de 240 es el borde derecho y cerca de -240 el izquierdo.</p>
+  <ol class="steps">
+    <li><div><p>Deja el <em>por siempre</em> de la pelota exactamente en este orden: <strong>mover</strong>, <strong>comprobar los bordes</strong>, <strong>rebotar</strong>.</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>comienza juego</i></span>
+        <div class="cblock">
+          <span class="blk control">por siempre</span>
+          <div class="inner">
+            <span class="blk motion">mover <span class="blk vars">velocidad</span> pasos</span>
+            <span class="blk control">si ¿tocando player1? o ¿tocando player2? entonces … (actividad 3)</span>
+            <div class="cblock">
+              <span class="blk control">si <span class="blk ops">&lt;¿tocando <i>borde</i>?&gt; y &lt;<span class="blk motion">posición en x</span> &gt; <i>220</i>&gt;</span> entonces</span>
+              <div class="inner">
+                <span class="blk vars">sumar a <i>player 1</i> <i>1</i></span>
+                <span class="blk events">enviar <i>inicializar</i></span>
+              </div>
+              <div class="foot"></div>
+            </div>
+            <div class="cblock">
+              <span class="blk control">si <span class="blk ops">&lt;¿tocando <i>borde</i>?&gt; y &lt;<span class="blk motion">posición en x</span> &lt; <i>-220</i>&gt;</span> entonces</span>
+              <div class="inner">
+                <span class="blk vars">sumar a <i>player 2</i> <i>1</i></span>
+                <span class="blk events">enviar <i>inicializar</i></span>
+              </div>
+              <div class="foot"></div>
+            </div>
+            <span class="blk motion">rebotar si toca un borde</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Fíjate en quién gana el punto. Si la pelota llega al borde <strong>derecho</strong>, ha pasado la pala del jugador 2, así que el punto es para el <strong>jugador 1</strong>. En el borde izquierdo es al revés.</p></div></li>
+    <li><div><p>¿Por qué este orden? Si <em>rebotar</em> va antes de comprobar los bordes, la pelota ya se ha alejado del borde cuando lo comprobamos y el punto no cuenta. En el vídeo pasa justo esto y se arregla cambiando el orden de los bloques.</p></div></li>
+  </ol>
+  <h3>Parte C · Cada golpe, más rápido</h3>
+  <ol class="steps">
+    <li><div><p>Dentro del <em>si</em> de las palas, debajo de <em>apuntar en dirección</em>, añade <span class="blk vars">sumar a <i>velocidad</i> <i>1</i></span>.</p></div></li>
+    <li><div><p>Juega una partida. Cada rebote en una pala hace que la pelota vaya más rápida. Después de un punto, la cuenta atrás vuelve a poner la velocidad en 5.</p></div></li>
+  </ol>
+  <div class="note"><strong>Atención: el vídeo tiene un error</strong><p>En el vídeo la velocidad se <em>multiplica</em> por 1. Multiplicar por 1 deja el número igual, así que la pelota no acelera. Hay que <strong>sumar</strong> 1 a la velocidad, como en el paso 1 de la parte C.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Cuando la pelota llega al borde derecho, sube el marcador del jugador 1. En el borde izquierdo, el del jugador 2.</li><li>Después de cada punto, la pelota vuelve al centro y hay otra cuenta atrás.</li><li>La pelota acelera con cada golpe de pala.</li><li>Al pulsar la bandera verde, el marcador vuelve a 0 a 0.</li></ul></div>
+</section>
+
+<section class="lesson" id="a5" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">5</div><h2>Arreglos y retos</h2><p class="goal">Arreglar un fallo frecuente y terminar el juego.</p></div>
+  <div class="check">
+    <h3>Arreglo · La pelota se queda pegada a la pala</h3>
+    <p>A veces la pelota tiembla pegada a la pala y no sale. Pasa porque cambia de dirección pero, antes de moverse, sigue tocando la pala, y vuelve a cambiar de dirección una y otra vez.</p>
+    <p><strong>Solución:</strong> dentro del <em>si</em> de las palas, justo después de <em>apuntar en dirección</em>, añade <span class="blk motion">mover <span class="blk vars">velocidad</span> pasos</span>. Así la pelota se aleja de la pala antes de volver a comprobar si la toca.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 1 · Gana el primero que llegue a 10</h3>
+    <p>Ahora el juego no termina nunca. Haz que, cuando un jugador llegue a 10 puntos, salga un mensaje con el ganador y el juego se pare. Esta parte se programa en el <strong>escenario</strong>.</p>
+    <p class="muted">Pista: un <em>por siempre</em> que compruebe si <code>player 1</code> = 10 o si <code>player 2</code> = 10.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 2 · Saque hacia cualquier lado</h3>
+    <p>La pelota siempre sale hacia el jugador 2, porque todas las direcciones entre 45 y 135 van hacia la derecha. Haz que a veces salga hacia la izquierda.</p>
+    <p class="muted">Pista: ¿qué pasa si a veces multiplicas la dirección inicial por -1?</p>
+  </div>
+  <div class="check">
+    <h3>Reto 3 · Rebote menos previsible</h3>
+    <p>Al rebotar en una pala, suma a la dirección un pequeño número al azar, entre -10 y 10. Así los rebotes no son siempre iguales.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Actividades basadas en el tutorial <a href="https://www.programoergosum.es/tutoriales/videojuego-de-pong-con-scratch-2" target="_blank" rel="noopener">«Videojuego de Pong programado con Scratch 2.0»</a> de la Asociación Programo Ergo Sum y en sus vídeos, con licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>
+  <p>Cambios: los vídeos se han convertido en actividades paso a paso adaptadas a Scratch 3, con bloques de ejemplo, comprobaciones, la corrección de un error del vídeo 4 y retos nuevos. Esta adaptación se comparte con la misma licencia.</p>
+</footer>
+</div>
+
+</body></html>
