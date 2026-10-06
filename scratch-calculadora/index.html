@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 5 actividades · 1–2 sesiones</div>
+  <h1>Scratch: una calculadora</h1>
+  <p class="lead">Vas a programar una calculadora con botones que se pulsan con el ratón. Aprenderás a guardar datos en <strong>variables</strong>, a <strong>unir</strong> texto para formar números de varias cifras y a decidir con <strong>si… entonces… si no</strong> qué operación hacer.</p>
+  <ul class="toc">
+    <li><a href="#a1"><b>1</b> Los botones</a></li>
+    <li><a href="#a2"><b>2</b> Las variables</a></li>
+    <li><a href="#a3"><b>3</b> Escribir números</a></li>
+    <li><a href="#a4"><b>4</b> Operar</a></li>
+    <li><a href="#a5"><b>5</b> Probar y retos</a></li>
+  </ul>
+  <div class="note">
+    <strong>Cómo funciona una calculadora por dentro</strong>
+    <p>Para calcular <code>12 + 7</code> la calculadora hace esto: va mostrando lo que escribes (<code>12</code>). Al pulsar <strong>+</strong>, guarda ese número como <em>primer número</em>, recuerda que la operación es «suma» y deja la pantalla en 0. Escribes <code>7</code>. Al pulsar <strong>=</strong>, guarda el 7 como <em>segundo número</em>, hace la operación y muestra <code>19</code>. Cada una de esas cosas que hay que recordar será una variable.</p>
+  </div>
+</header>
+
+<section class="lesson" id="a1" style="--c:#9966ff">
+  <div class="lesson-head"><div class="num">1</div><h2>Los botones</h2><p class="goal">Vas a tener 16 botones colocados en una cuadrícula de 4 × 4.</p></div>
+  <ol class="steps">
+    <li><div><p>Entra en <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>, pulsa <strong>Crear</strong> y llama al proyecto <code>Calculadora – tu nombre</code>.</p></div></li>
+    <li><div><p>Borra el gato: clic derecho sobre él en la lista de objetos → <strong>borrar</strong>.</p></div></li>
+    <li><div><p>Dibuja el primer botón. Pasa el ratón por <strong>Elige un objeto</strong> y pulsa el pincel (<strong>Pintar</strong>). Con la herramienta <strong>Rectángulo</strong> dibuja un cuadrado relleno de unos 50 × 50. Con la herramienta <strong>Texto</strong> escribe <code>1</code> encima, grande y centrado. Llama al objeto <code>1</code>.</p></div></li>
+    <li><div><p>Haz el resto duplicando: clic derecho sobre el botón → <strong>duplicar</strong>. En cada copia cambia el texto del disfraz y el nombre del objeto. Necesitas estos 16 botones: los dígitos <code>0</code> a <code>9</code>, <code>+</code>, <code>−</code>, <code>×</code>, <code>÷</code>, <code>=</code> y <code>C</code> (borrar). Usa un color para los números y otro para las operaciones: así se distinguen mejor.</p></div></li>
+    <li><div><p>Coloca cada botón escribiendo su <strong>x</strong> y su <strong>y</strong> en la información del objeto, debajo del escenario:</p>
+      <div class="tbl"><table>
+        <tr><th></th><th>x = -90</th><th>x = -30</th><th>x = 30</th><th>x = 90</th></tr>
+        <tr><th>y = 60</th><td>7</td><td>8</td><td>9</td><td>÷</td></tr>
+        <tr><th>y = 0</th><td>4</td><td>5</td><td>6</td><td>×</td></tr>
+        <tr><th>y = -60</th><td>1</td><td>2</td><td>3</td><td>−</td></tr>
+        <tr><th>y = -120</th><td>C</td><td>0</td><td>=</td><td>+</td></tr>
+      </table></div>
+      <p class="muted">Los botones están separados 60 píxeles. Si tus botones son más grandes, sepáralos más.</p></div></li>
+  </ol>
+  <div class="note"><strong>Otra opción: los botones del tutorial original</strong><p>El tutorial en el que se basa esta actividad ofrece un ZIP con imágenes de botones para descargar. Puedes usarlas con <strong>Elige un objeto → Subir un objeto</strong>. Si lo haces, baja el <strong>Tamaño</strong> de cada botón a unos 60.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Tienes 16 objetos y cada uno se llama como el botón que muestra.</li><li>Están ordenados en una cuadrícula de 4 × 4 como en la tabla.</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">2</div><h2>Las variables</h2><p class="goal">Vas a crear las cuatro «cajas» donde la calculadora guarda lo que necesita recordar.</p></div>
+  <ol class="steps">
+    <li><div><p>Ve a <strong>Variables → Crear una variable</strong> y crea estas cuatro, todas <strong>Para todos los objetos</strong>, porque las van a usar todos los botones:</p>
+      <div class="tbl"><table>
+        <tr><th>Variable</th><th>Qué guarda</th><th>Ejemplo con 12 + 7</th></tr>
+        <tr><td><code>pantalla</code></td><td>Lo que se ve en la pantalla de la calculadora</td><td>12, luego 0, luego 7 y al final 19</td></tr>
+        <tr><td><code>num1</code></td><td>El primer número</td><td>12</td></tr>
+        <tr><td><code>num2</code></td><td>El segundo número</td><td>7</td></tr>
+        <tr><td><code>operacion</code></td><td>Qué operación hay que hacer</td><td>+</td></tr>
+      </table></div></div></li>
+    <li><div><p>En la paleta, quita la marca de <code>num1</code>, <code>num2</code> y <code>operacion</code> para que no se vean en el escenario. Deja marcada solo <code>pantalla</code>.</p></div></li>
+    <li><div><p>Haz clic derecho sobre el marcador de <code>pantalla</code> en el escenario y elige <strong>lectura grande</strong>. Arrástralo encima de los botones: esa es la pantalla de la calculadora.</p></div></li>
+    <li><div><p>Programa el botón <code>C</code>. Sirve para borrar todo y empezar de cero:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en este objeto</span>
+        <span class="blk vars">dar a <i>pantalla</i> el valor <i>0</i></span>
+        <span class="blk vars">dar a <i>num1</i> el valor <i>0</i></span>
+        <span class="blk vars">dar a <i>num2</i> el valor <i>0</i></span>
+        <span class="blk vars">dar a <i>operacion</i> el valor <i></i></span>
+      </div>
+      <p class="muted">En <code>operacion</code> deja el hueco vacío: borra lo que haya escrito.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>La pantalla grande se ve encima de los botones.</li><li>Al pulsar <code>C</code>, la pantalla muestra 0.</li></ul></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#4c97ff">
+  <div class="lesson-head"><div class="num">3</div><h2>Escribir números de varias cifras</h2><p class="goal">Al pulsar 1 y luego 2, la pantalla tiene que mostrar 12, no 3.</p></div>
+  <p>El truco está en el bloque <span class="blk ops">unir <i>manzana</i> <i>plátano</i></span> de <strong>Operadores</strong>. No suma: pega dos textos. <em>unir 1 2</em> da <code>12</code>.</p>
+  <p>Hay un caso especial: si la pantalla está en 0 y pulsas 5, la pantalla debe quedarse en <code>5</code>, no en <code>05</code>. Por eso necesitamos un <em>si… entonces… si no</em>.</p>
+  <ol class="steps">
+    <li><div><p>Selecciona el botón <code>1</code> y monta:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en este objeto</span>
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops"><span class="blk vars">pantalla</span> = <i>0</i></span> entonces</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <i>1</i></span></div>
+          <span class="blk control">si no</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <span class="blk ops">unir <span class="blk vars">pantalla</span> <i>1</i></span></span></div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Pulsa el botón 1 varias veces. La pantalla debe mostrar 1, 11, 111…</p></div></li>
+    <li><div><p>Copia el programa a los demás números: arrástralo desde el área de programación hasta el botón <code>2</code> en la lista de objetos. Después selecciona el <code>2</code> y cambia los <strong>dos</strong> unos por doses. Repite con todos los dígitos, del <code>0</code> al <code>9</code>.</p></div></li>
+  </ol>
+  <div class="note"><strong>Error típico</strong><p>Se cambia solo uno de los dos números del programa copiado. Si al pulsar 7 sale 4, el bloque <em>unir</em> del botón 7 todavía pone 4. Revisa los dos huecos de cada botón.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Pulsa C y escribe 2026: la pantalla muestra 2026.</li><li>Pulsa C y luego 0, 0, 5: la pantalla muestra 5, no 005.</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">4</div><h2>Operar</h2><p class="goal">Los botones de operación guardan el primer número y el botón = calcula el resultado.</p></div>
+  <h3>Parte A · Los botones + − × ÷</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el botón <code>+</code> y monta:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en este objeto</span>
+        <span class="blk vars">dar a <i>num1</i> el valor <span class="blk vars">pantalla</span></span>
+        <span class="blk vars">dar a <i>operacion</i> el valor <i>+</i></span>
+        <span class="blk vars">dar a <i>pantalla</i> el valor <i>0</i></span>
+      </div>
+      <p class="muted">Guarda el número de la pantalla en <code>num1</code>, anota la operación y deja la pantalla en 0 para escribir el segundo número.</p></div></li>
+    <li><div><p>Copia el programa a <code>−</code>, <code>×</code> y <code>÷</code>. Solo cambia lo que se guarda en <code>operacion</code>:</p>
+      <div class="tbl"><table>
+        <tr><th>Botón</th><th>Valor de <code>operacion</code></th></tr>
+        <tr><td>+</td><td><code>+</code></td></tr>
+        <tr><td>−</td><td><code>-</code></td></tr>
+        <tr><td>×</td><td><code>*</code></td></tr>
+        <tr><td>÷</td><td><code>/</code></td></tr>
+      </table></div>
+      <p class="muted">Puedes guardar la palabra que quieras (por ejemplo <code>suma</code>), pero tiene que ser <strong>exactamente</strong> la misma que comprobará el botón =.</p></div></li>
+  </ol>
+  <h3>Parte B · El botón =</h3>
+  <ol class="steps">
+    <li><div><p>Selecciona el botón <code>=</code>. Primero guarda el segundo número y después mira qué operación toca:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en este objeto</span>
+        <span class="blk vars">dar a <i>num2</i> el valor <span class="blk vars">pantalla</span></span>
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops"><span class="blk vars">operacion</span> = <i>+</i></span> entonces</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <span class="blk ops"><span class="blk vars">num1</span> + <span class="blk vars">num2</span></span></span></div>
+          <div class="foot"></div>
+        </div>
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops"><span class="blk vars">operacion</span> = <i>-</i></span> entonces</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <span class="blk ops"><span class="blk vars">num1</span> - <span class="blk vars">num2</span></span></span></div>
+          <div class="foot"></div>
+        </div>
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops"><span class="blk vars">operacion</span> = <i>*</i></span> entonces</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <span class="blk ops"><span class="blk vars">num1</span> * <span class="blk vars">num2</span></span></span></div>
+          <div class="foot"></div>
+        </div>
+        <div class="cblock">
+          <span class="blk control">si <span class="blk ops"><span class="blk vars">operacion</span> = <i>/</i></span> entonces</span>
+          <div class="inner"><span class="blk vars">dar a <i>pantalla</i> el valor <span class="blk ops"><span class="blk vars">num1</span> / <span class="blk vars">num2</span></span></span></div>
+          <div class="foot"></div>
+        </div>
+      </div></div></li>
+    <li><div><p>Observa la diferencia: en la actividad 3 usamos <em>unir</em> para pegar cifras. Aquí usamos <em>+</em> para sumar de verdad. <code>unir 12 7</code> da <code>127</code>, mientras que <code>12 + 7</code> da <code>19</code>.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>C, 1, 2, +, 7, = → 19</li><li>C, 5, 0, −, 8, = → 42</li><li>C, 6, ×, 7, = → 42</li><li>C, 8, 4, ÷, 2, = → 42</li></ul></div>
+</section>
+
+<section class="lesson" id="a5" style="--c:#cf63cf">
+  <div class="lesson-head"><div class="num">5</div><h2>Busca los fallos y mejora la calculadora</h2><p class="goal">Una calculadora de verdad tiene que funcionar también cuando el usuario hace cosas raras. Prueba estos casos.</p></div>
+  <div class="check">
+    <h3>Prueba 1 · Dividir entre cero</h3>
+    <p>Haz C, 5, ÷, 0, =. ¿Qué muestra la pantalla? Haz que en ese caso muestre <code>Error</code>.</p>
+    <p class="muted">Pista: dentro del <em>si</em> de la división, comprueba antes si <code>num2</code> = 0.</p>
+  </div>
+  <div class="check">
+    <h3>Prueba 2 · Escribir después de un resultado</h3>
+    <p>Haz 2, +, 3, = (sale 5) y después pulsa 1. ¿Sale 51? En una calculadora normal, después de un resultado, el número nuevo empieza de cero. Arréglalo.</p>
+    <p class="muted">Pista: crea una variable <code>nuevo</code>. El botón = la pone a 1. Los botones de número, si vale 1, sustituyen la pantalla en lugar de unir, y la vuelven a poner a 0.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 1 · Botón de porcentaje</h3>
+    <p>Añade un botón <code>%</code> que convierta la pantalla en su porcentaje. Por ejemplo, 200, ×, 15, % debe dar 30.</p>
+    <p class="muted">Pista: el porcentaje es una multiplicación. 15 % es lo mismo que × 0,15.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 2 · Decimales</h3>
+    <p>Añade un botón <code>.</code> para escribir números como 3.5. ¿Qué pasa si alguien lo pulsa dos veces?</p>
+    <p class="muted">Pista: busca en Operadores un bloque que diga si un texto <em>contiene</em> otro.</p>
+  </div>
+  <div class="check">
+    <h3>Reto 3 · Usar el teclado</h3>
+    <p>Haz que también se pueda escribir con las teclas de los números, además de con el ratón.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Actividades inspiradas en el tutorial <a href="https://fernandoarciniega.com/creando-una-calculadora-simple-en-scratch-3-0-introduccion-paso-a-paso/" target="_blank" rel="noopener">«Creando una calculadora simple en Scratch 3.0»</a> de Fernando Omar Arciniega Martínez. Los textos, la distribución de botones y los ejemplos de esta página son una redacción propia.</p>
+</footer>
+</div>
+
+</body></html>

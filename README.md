@@ -7,5 +7,6 @@ Materiales de Programación Informática de 4º ESO (curso 2026-27), IES Alonso 
 - [Scratch: Pong para dos jugadores](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-pong/)
 - [Scratch: Frogger](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-frogger/)
 - [Scratch: Arkanoid](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-arkanoid/)
+- [Scratch: una calculadora](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-calculadora/) (inspirada en un tutorial de Fernando Arciniega; texto propio)
 
 Las actividades de Scratch están basadas en los tutoriales «Iniciación a la programación con Scratch 2.0», «Videojuego del laberinto con Scratch 2.0», «Videojuego de Pong programado con Scratch 2.0», «Videojuego de Frogger con Scratch 2.0» y «Videojuego de Arkanoid con Scratch 2.0» de la Asociación Programo Ergo Sum (CC BY-SA 4.0). La adaptación se comparte con la misma licencia.
