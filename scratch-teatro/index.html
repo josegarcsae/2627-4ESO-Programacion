@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retablo en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#1d2233; --muted:#5a6178; --line:#dde1ec;
+  --accent:#3d6fe0; --accent-soft:#e6edfd; --note:#fff6de; --note-line:#e8c766;
+  --b-motion:#4c97ff; --b-looks:#9966ff; --b-sound:#cf63cf; --b-events:#ffbf00; --b-control:#ffab19;
+  --b-sensing:#5cb1d6; --b-ops:#59c059; --b-vars:#ff8c1a; --b-pen:#0fbd8c; --b-ink:#ffffff; --b-ink-dark:#3a2a00;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+    --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12151f; --surface:#1b1f2c; --ink:#e8ebf4; --muted:#a3aac0; --line:#2d3346;
+  --accent:#8aaaff; --accent-soft:#232c47; --note:#2c2717; --note-line:#8a7430;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:760px;margin:0 auto}
+header.top{padding-block:40px 24px;display:grid;gap:12px}
+.eyebrow{font:600 13px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(34px,7vw,52px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:800 clamp(24px,4.5vw,32px)/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 19px/1.3 var(--display);margin:0}
+p{margin:0}
+.lead{font-size:19px;color:var(--muted);max-width:62ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding:0;list-style:none}
+.toc a{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);text-decoration:none;color:var(--ink);font-size:15px}
+.toc b{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+.note{background:var(--note);border:1px solid var(--note-line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:16px}
+.note strong{font-family:var(--display)}
+
+section.lesson{margin-top:48px;display:grid;gap:18px;scroll-margin-top:16px}
+.lesson-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+.num{grid-row:span 2;width:52px;height:52px;display:grid;place-items:center;font:800 24px/1 var(--display);color:#fff;background:var(--c,var(--accent));border-radius:12px 12px 12px 4px;position:relative}
+.num::after{content:"";position:absolute;left:12px;bottom:-7px;width:16px;height:8px;background:inherit;border-radius:0 0 5px 5px}
+.goal{color:var(--muted);font-size:16px}
+
+.video{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.video:hover{border-color:var(--accent)}
+.play{width:64px;height:48px;border-radius:10px;background:#e62117;display:grid;place-items:center}
+.play::before{content:"";border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.video small{display:block;color:var(--muted);font-size:14px}
+.video span{font-weight:700}
+.embed{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 14px/28px var(--body);text-align:center;margin-top:1px}
+ol.steps>li>div{display:grid;gap:8px;min-width:0}
+
+.check{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.check h3{font-size:16px}
+.check ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.muted{color:var(--muted)}
+
+/* Bloques estilo Scratch */
+.script{display:grid;gap:3px;justify-items:start;padding:12px;border-radius:10px;background:var(--accent-soft);overflow-x:auto;max-width:100%}
+.blk{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:5px;color:var(--b-ink);font:700 14px/1.3 var(--body);white-space:nowrap}
+.blk.hat{border-radius:16px 16px 5px 5px;padding-top:10px}
+.blk i{font-style:normal;background:#fff;color:#333;border-radius:999px;padding:1px 9px;font-weight:700}
+.motion{background:var(--b-motion)} .looks{background:var(--b-looks)} .sound{background:var(--b-sound)}
+.events{background:var(--b-events);color:var(--b-ink-dark)} .control{background:var(--b-control);color:var(--b-ink-dark)}
+.sensing{background:var(--b-sensing)} .ops{background:var(--b-ops)} .vars{background:var(--b-vars)} .pen{background:var(--b-pen)}
+.cblock{display:grid;gap:3px;justify-items:start}
+.cblock>.inner{border-left:14px solid var(--b-control);padding-left:6px;display:grid;gap:3px;justify-items:start}
+.cblock>.foot{width:60px;height:12px;background:var(--b-control);border-radius:0 0 5px 5px}
+
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cat{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.cat::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--dot);margin-top:5px}
+.cat b{display:block}
+
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:grid;gap:6px}
+</style>
+</head><body>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Programación · 4º ESO · 6 actividades · 2–3 sesiones · en parejas</div>
+  <h1>Scratch: teatro con «El retablo de las maravillas»</h1>
+  <p class="lead">Vas a llevar a Scratch una escena de un entremés de Cervantes. Los personajes son objetos, los decorados son fondos y el diálogo se programa. Lo difícil no es dibujar: es que cada personaje hable <strong>cuando le toca</strong>. Para eso aprenderás a usar <strong>mensajes</strong> como lo hace el regidor de un teatro: dando la entrada a cada actor.</p>
+  <ul class="toc">
+    <li><a href="#a0"><b>0</b> La obra</a></li>
+    <li><a href="#a1"><b>1</b> Escenografía</a></li>
+    <li><a href="#a2"><b>2</b> Diálogo con esperas</a></li>
+    <li><a href="#a3"><b>3</b> Diálogo con mensajes</a></li>
+    <li><a href="#a4"><b>4</b> Movimiento y música</a></li>
+    <li><a href="#a5"><b>5</b> Las maravillas</a></li>
+    <li><a href="#a6"><b>6</b> Final y entrega</a></li>
+  </ul>
+</header>
+
+<section class="lesson" id="a0" style="--c:#5cb1d6">
+  <div class="lesson-head"><div class="num">0</div><h2>La obra</h2><p class="goal">Vas a entender de qué va la obra antes de programar nada.</p></div>
+  <p><strong>El retablo de las maravillas</strong> es un entremés, una obra corta y cómica, que Miguel de Cervantes publicó en 1615. Su texto es de dominio público.</p>
+  <p><strong>Argumento.</strong> Dos pícaros, <strong>Chanfalla</strong> y <strong>Chirinos</strong>, llegan a un pueblo con un músico, <strong>Rabelín</strong>. Dicen traer un retablo mágico con figuras maravillosas que se mueven. Pero hay una trampa: según ellos, quien no tenga la sangre y el linaje «como es debido» no podrá ver nada. En realidad no hay nada que ver. Las autoridades del pueblo (el <strong>Gobernador</strong>, el alcalde <strong>Benito Repollo</strong>, el regidor <strong>Juan Castrado</strong> y el escribano <strong>Pedro Capacho</strong>) no ven nada, pero ninguno se atreve a decirlo, por miedo a lo que pensarán los demás. Así que todos fingen ver un toro, ratones, agua que cae del cielo… Al final llega un <strong>furrier</strong> (un soldado), dice la verdad (que allí no hay nada) y los del pueblo le acusan de ser él quien no puede verlo.</p>
+  <div class="note"><strong>Para comentar en clase</strong><p>La obra es una crítica a quien finge ver lo que no ve para no quedar mal ante los demás, como en el cuento de «El traje nuevo del emperador». En la España de 1615, «no tener la sangre como es debido» quería decir tener antepasados judíos o moros, algo por lo que se discriminaba a la gente. Cervantes se ríe de esa obsesión. ¿Conoces situaciones de hoy en que alguien finge pensar como el grupo para no quedar mal?</p></div>
+  <ol class="steps">
+    <li><div><p>Busca el texto completo en la <a href="https://www.cervantesvirtual.com/" target="_blank" rel="noopener">Biblioteca Virtual Miguel de Cervantes</a> (busca «Retablo de las maravillas») y lee el principio y la escena del toro.</p></div></li>
+    <li><div><p>Elegid en pareja <strong>un fragmento corto</strong>: entre 8 y 12 intervenciones y entre 3 y 4 personajes. Tenéis dos opciones: usar las palabras de Cervantes recortadas, o adaptarlas al español de hoy. Las dos valen. Lo que no vale es una escena tan larga que no dé tiempo a programarla.</p></div></li>
+    <li><div><p>Escribid el guion en una tabla como esta. Es la que usaréis para programar:</p>
+      <div class="tbl"><table>
+        <tr><th>Turno</th><th>Personaje</th><th>Dice / hace</th></tr>
+        <tr><td>1</td><td>Chanfalla</td><td>Anuncia que va a empezar el retablo y explica quién no podrá verlo.</td></tr>
+        <tr><td>2</td><td>Benito Repollo</td><td>Asegura que él lo verá perfectamente.</td></tr>
+        <tr><td>3</td><td>Rabelín</td><td>Toca la música de entrada.</td></tr>
+        <tr><td>4</td><td>Chanfalla</td><td>«¡Cuidado, que sale un toro!»</td></tr>
+        <tr><td>5</td><td>Juan Castrado</td><td>Grita y se aparta del toro, que no existe.</td></tr>
+        <tr><td>…</td><td>…</td><td>…</td></tr>
+      </table></div>
+      <p class="muted">Esta tabla es un ejemplo con el argumento resumido, no el texto de Cervantes. Escribid en la columna «Dice» las frases reales de vuestro fragmento.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>Tenéis un guion de 8 a 12 turnos con 3 o 4 personajes.</li><li>Sabéis explicar por qué los del pueblo fingen ver el retablo.</li></ul></div>
+</section>
+
+<section class="lesson" id="a1" style="--c:#9966ff">
+  <div class="lesson-head"><div class="num">1</div><h2>Escenografía y reparto</h2><p class="goal">Vas a montar el escenario y a «contratar» a los actores.</p></div>
+  <ol class="steps">
+    <li><div><p>Crea un proyecto nuevo llamado <code>Retablo – vuestros nombres</code> y borra el gato.</p></div></li>
+    <li><div><p><strong>Decorados.</strong> En el escenario añade dos fondos de la biblioteca o dibujados por vosotros. Llámalos <code>plaza</code> (la plaza del pueblo, donde llegan los pícaros) y <code>sala</code> (donde se representa el retablo). Si queréis, añadid un tercero llamado <code>titulo</code> con el nombre de la obra y vuestros nombres.</p></div></li>
+    <li><div><p><strong>Reparto.</strong> Añade un objeto por personaje. Puedes usar personas de la biblioteca de Scratch (categoría <em>Personas</em>) o dibujarlas. Ponle a cada objeto el <strong>nombre del personaje</strong> (<code>Chanfalla</code>, <code>Repollo</code>…). Así, cuando haya muchos programas, sabréis de quién es cada uno.</p></div></li>
+    <li><div><p><strong>Marcas en el escenario.</strong> En teatro, cada actor tiene una «marca» en el suelo donde se coloca. Decide la posición de cada personaje y prográmala:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk motion">ir a x: <i>-150</i> y: <i>-60</i></span>
+        <span class="blk looks">mostrar</span>
+      </div>
+      <p class="muted">Si un personaje entra más tarde, al principio ponle <em>esconder</em> en lugar de <em>mostrar</em>.</p></div></li>
+    <li><div><p>En el <strong>escenario</strong>: <em>al hacer clic en la bandera verde → cambiar fondo a titulo → esperar 3 segundos → cambiar fondo a plaza</em>.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>Hay un objeto por personaje y cada uno se llama como el personaje.</li><li>Al pulsar la bandera, cada uno va a su marca y se ve el título y luego la plaza.</li></ul></div>
+</section>
+
+<section class="lesson" id="a2" style="--c:#ffab19">
+  <div class="lesson-head"><div class="num">2</div><h2>Primer intento: diálogo con esperas</h2><p class="goal">Vas a programar los tres primeros turnos de la forma más sencilla y a descubrir por qué no sirve.</p></div>
+  <ol class="steps">
+    <li><div><p>Programa los turnos 1, 2 y 3 solo con esperas. Chanfalla habla primero:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk control">esperar <i>3</i> segundos</span>
+        <span class="blk looks">decir <i>(turno 1)</i> durante <i>4</i> segundos</span>
+      </div>
+      <p>Repollo tiene que esperar a que Chanfalla termine (3 + 4 = 7 segundos):</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk control">esperar <i>7</i> segundos</span>
+        <span class="blk looks">decir <i>(turno 2)</i> durante <i>3</i> segundos</span>
+      </div></div></li>
+    <li><div><p>Prueba. Funciona. Ahora haz el experimento: la frase de Chanfalla es larga y no da tiempo a leerla, así que cambia su <em>4 segundos</em> por <em>6</em>. ¿Qué pasa con Repollo?</p></div></li>
+  </ol>
+  <div class="note"><strong>Lo que acabas de descubrir</strong><p>Con esperas, cada actor mira su propio reloj y no escucha a los demás. Si cambias la duración de una frase, hay que recalcular a mano todas las esperas que vienen detrás. Con 12 turnos, cambiar una frase obliga a cambiar 11 números. En un teatro de verdad no funciona así: el regidor da la entrada a cada actor cuando le toca. Eso es lo que harás en la actividad 3.</p></div>
+</section>
+
+<section class="lesson" id="a3" style="--c:#59c059">
+  <div class="lesson-head"><div class="num">3</div><h2>El regidor: diálogo con mensajes</h2><p class="goal">El escenario hará de regidor: dará la entrada a cada turno y esperará a que termine antes de dar la siguiente.</p></div>
+  <p>La clave es el bloque <span class="blk events">enviar <i>turno1</i> y esperar</span>. Envía el mensaje y <strong>se queda esperando</strong> hasta que terminan todos los programas que empezaron con ese mensaje. Así, cuando el personaje termina de hablar, el regidor da paso al siguiente turno, dure lo que dure la frase.</p>
+  <ol class="steps">
+    <li><div><p>Borra los programas de la actividad 2 que empezaban con esperas.</p></div></li>
+    <li><div><p>En el <strong>escenario</strong>, escribe el guion como una lista de mensajes, uno por turno. Créalos con <em>enviar → Nuevo mensaje</em>:</p>
+      <div class="script">
+        <span class="blk hat events">al hacer clic en la bandera verde</span>
+        <span class="blk looks">cambiar fondo a <i>titulo</i></span>
+        <span class="blk control">esperar <i>3</i> segundos</span>
+        <span class="blk looks">cambiar fondo a <i>plaza</i></span>
+        <span class="blk events">enviar <i>turno1</i> y esperar</span>
+        <span class="blk events">enviar <i>turno2</i> y esperar</span>
+        <span class="blk events">enviar <i>turno3</i> y esperar</span>
+        <span class="blk events">enviar <i>turno4</i> y esperar</span>
+        <span class="blk control">… hasta el último turno</span>
+      </div></div></li>
+    <li><div><p>Cada personaje responde solo a <strong>sus</strong> turnos. Chanfalla:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>turno1</i></span>
+        <span class="blk looks">decir <i>(turno 1)</i> durante <i>4</i> segundos</span>
+      </div>
+      <p>Repollo:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>turno2</i></span>
+        <span class="blk looks">decir <i>(turno 2)</i> durante <i>3</i> segundos</span>
+      </div></div></li>
+    <li><div><p>Repite el experimento: cambia la duración de la frase de Chanfalla. Ahora Repollo espera lo que haga falta, sin tocar nada más.</p></div></li>
+    <li><div><p>Programa así todos los turnos de tu guion. Calcula unos <strong>2 segundos por cada 10 palabras</strong> para que dé tiempo a leer.</p></div></li>
+  </ol>
+  <div class="tbl"><table>
+    <tr><th></th><th>Con esperas (actividad 2)</th><th>Con mensajes (actividad 3)</th></tr>
+    <tr><td>¿Quién decide cuándo habla cada uno?</td><td>Cada personaje, con su reloj</td><td>El escenario (el regidor)</td></tr>
+    <tr><td>Si cambias una frase…</td><td>Recalculas todas las esperas siguientes</td><td>No cambias nada más</td></tr>
+    <tr><td>Para ver el orden del guion…</td><td>Hay que mirar todos los personajes</td><td>Basta con mirar el escenario</td></tr>
+  </table></div>
+  <div class="note"><strong>Error típico</strong><p>Usar <em>enviar</em> en vez de <em>enviar y esperar</em>. Con <em>enviar</em> solo, el regidor da todas las entradas de golpe y los personajes hablan a la vez.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Todo el guion se ve en orden en el programa del escenario.</li><li>Cada personaje solo tiene programas <em>al recibir</em> de sus propios turnos.</li><li>Nunca hablan dos a la vez.</li></ul></div>
+</section>
+
+<section class="lesson" id="a4" style="--c:#4c97ff">
+  <div class="lesson-head"><div class="num">4</div><h2>Entradas, gestos y música</h2><p class="goal">Los actores no solo hablan: entran, se mueven y reaccionan. Y Rabelín toca.</p></div>
+  <ol class="steps">
+    <li><div><p><strong>Entrar en escena.</strong> Un personaje que llega más tarde entra deslizándose desde un lado. Dentro de su turno:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>turno5</i></span>
+        <span class="blk motion">ir a x: <i>-260</i> y: <i>-60</i></span>
+        <span class="blk looks">mostrar</span>
+        <span class="blk motion">deslizar en <i>1.5</i> segs a x: <i>-120</i> y: <i>-60</i></span>
+        <span class="blk looks">decir <i>(su frase)</i> durante <i>3</i> segundos</span>
+      </div></div></li>
+    <li><div><p><strong>Mirar al que habla.</strong> Pon el estilo de rotación en <em>izquierda/derecha</em> y usa <span class="blk motion">apuntar hacia <i>Chanfalla</i></span> antes de hablar. Así el personaje se gira hacia él.</p></div></li>
+    <li><div><p><strong>Gestos.</strong> Muchas personas de la biblioteca tienen varios disfraces con poses distintas. Usa <span class="blk looks">cambiar disfraz a …</span> para que gesticulen cuando hablan.</p></div></li>
+    <li><div><p><strong>Cambio de decorado.</strong> Cuando la acción pasa a la sala, el regidor lo indica entre dos turnos: <span class="blk looks">cambiar fondo a <i>sala</i></span>.</p></div></li>
+    <li><div><p><strong>La música de Rabelín.</strong> Añade a Rabelín un sonido de la categoría <em>Bucles</em> o <em>Instrumentos</em>. En su turno: <span class="blk sound">tocar sonido <i>(música)</i> hasta que termine</span>. Como su programa no acaba hasta que termina la música, el regidor espera a que acabe antes de seguir.</p></div></li>
+  </ol>
+  <div class="check"><h3>Comprueba</h3><ul><li>Al menos un personaje entra en escena deslizándose.</li><li>Los personajes miran hacia quien les habla.</li><li>Hay música y la escena sigue cuando termina.</li></ul></div>
+</section>
+
+<section class="lesson" id="a5" style="--c:#cf63cf">
+  <div class="lesson-head"><div class="num">5</div><h2>Las maravillas que no existen</h2><p class="goal">Lo más divertido de la obra: los personajes reaccionan a cosas que no están. Vas a programar esas reacciones.</p></div>
+  <p>Cuando Chanfalla anuncia una maravilla, en el escenario <strong>no aparece nada</strong>. Así es como tiene que ser. La gracia está en cómo reaccionan los del pueblo. Varios personajes pueden reaccionar al <strong>mismo</strong> mensaje a la vez.</p>
+  <ol class="steps">
+    <li><div><p>Crea un mensaje <code>toro</code>. En el escenario, después del turno en que Chanfalla anuncia el toro, pon <span class="blk events">enviar <i>toro</i> y esperar</span>.</p></div></li>
+    <li><div><p>Cada personaje del pueblo reacciona a su manera, todos a la vez. Por ejemplo, temblar de miedo:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>toro</i></span>
+        <span class="blk looks">decir <i>¡Ay, que me embiste!</i></span>
+        <div class="cblock">
+          <span class="blk control">repetir <i>10</i></span>
+          <div class="inner">
+            <span class="blk motion">sumar a x <i>8</i></span>
+            <span class="blk control">esperar <i>0.05</i> segundos</span>
+            <span class="blk motion">sumar a x <i>-8</i></span>
+            <span class="blk control">esperar <i>0.05</i> segundos</span>
+          </div>
+          <div class="foot"></div>
+        </div>
+        <span class="blk looks">decir <i></i></span>
+      </div>
+      <p>O huir y volver:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>toro</i></span>
+        <span class="blk looks">decir <i>¡Socorro!</i></span>
+        <span class="blk motion">deslizar en <i>0.5</i> segs a x: <i>230</i> y: <i>-60</i></span>
+        <span class="blk control">esperar <i>1</i> segundos</span>
+        <span class="blk motion">deslizar en <i>1</i> segs a x: <i>100</i> y: <i>-60</i></span>
+        <span class="blk looks">decir <i></i></span>
+      </div>
+      <p class="muted"><em>decir</em> con el hueco vacío borra el bocadillo.</p></div></li>
+    <li><div><p>Haz una segunda maravilla con otro mensaje, por ejemplo <code>ratones</code>: los personajes saltan (repetir: <em>sumar a y 15</em>, esperar, <em>sumar a y -15</em>) y gritan.</p></div></li>
+    <li><div><p>Haz que <strong>Chanfalla y Chirinos</strong> también reciban el mensaje, pero que reaccionen distinto: se miran y sonríen, porque saben que no hay nada. Por ejemplo, Chirinos piensa en vez de hablar: <span class="blk looks">pensar <i>¡Pican todos!</i> durante <i>2</i> segundos</span>.</p></div></li>
+  </ol>
+  <div class="note"><strong>Por qué esto es programación paralela</strong><p>Un solo mensaje pone en marcha varios programas a la vez, uno en cada personaje. <em>Enviar y esperar</em> espera a que terminen <strong>todos</strong>, también el del que tarda más. Por eso el regidor no sigue hasta que el último ha dejado de huir.</p></div>
+  <div class="check"><h3>Comprueba</h3><ul><li>Al anunciar la maravilla no aparece nada, pero todos reaccionan a la vez y cada uno de forma distinta.</li><li>Los pícaros reaccionan de manera diferente a los del pueblo.</li><li>La escena sigue cuando ha terminado la última reacción.</li></ul></div>
+</section>
+
+<section class="lesson" id="a6" style="--c:#ff8c1a">
+  <div class="lesson-head"><div class="num">6</div><h2>Final, créditos y entrega</h2><p class="goal">Vas a cerrar la obra como en un teatro: oscuro, créditos y aplausos.</p></div>
+  <ol class="steps">
+    <li><div><p><strong>Oscuro final.</strong> Pinta un fondo completamente negro llamado <code>oscuro</code>. Después del último turno, el regidor: <em>cambiar fondo a oscuro</em>, y envía un mensaje <code>fin</code> que hace que todos los personajes se escondan.</p></div></li>
+    <li><div><p><strong>Créditos.</strong> Crea un objeto <code>creditos</code> con un disfraz de texto: título, autor (Miguel de Cervantes, 1615), «adaptación de…» con vuestros nombres y el reparto. Hazlo subir desde abajo:</p>
+      <div class="script">
+        <span class="blk hat events">al recibir <i>fin</i></span>
+        <span class="blk motion">ir a x: <i>0</i> y: <i>-250</i></span>
+        <span class="blk looks">mostrar</span>
+        <span class="blk motion">deslizar en <i>8</i> segs a x: <i>0</i> y: <i>250</i></span>
+      </div></div></li>
+    <li><div><p><strong>Aplausos.</strong> Añade el sonido <em>Clapping</em> (o parecido) y que suene con los créditos.</p></div></li>
+    <li><div><p>Pide a otra pareja que vea vuestra obra sin explicarle nada. ¿Entiende quién habla y qué pasa?</p></div></li>
+  </ol>
+  <h3>Qué se valora</h3>
+  <div class="tbl"><table>
+    <tr><th>Criterio</th><th>Conseguido</th></tr>
+    <tr><td>Guion</td><td>De 8 a 12 turnos, fiel al argumento, con 3 o 4 personajes.</td></tr>
+    <tr><td>Regidor</td><td>Todo el orden del guion está en el escenario con <em>enviar y esperar</em>. No hay esperas calculadas a mano.</td></tr>
+    <tr><td>Puesta en escena</td><td>Entradas, gestos o miradas, cambio de decorado y música.</td></tr>
+    <tr><td>Las maravillas</td><td>Al menos una maravilla con reacciones simultáneas y distintas.</td></tr>
+    <tr><td>Cierre</td><td>Oscuro, créditos con autor y adaptadores, y aplausos.</td></tr>
+    <tr><td>Orden</td><td>Objetos con nombre de personaje y mensajes con nombres claros.</td></tr>
+  </table></div>
+  <div class="check">
+    <h3>Retos</h3>
+    <ul>
+      <li><strong>Voz.</strong> Añade la extensión <strong>Texto a voz</strong> (botón de extensiones, abajo a la izquierda) y haz que un narrador lea la introducción en voz alta.</li>
+      <li><strong>El furrier.</strong> Programa el final: el furrier dice que no ve nada y todos los demás se vuelven hacia él a la vez con <em>apuntar hacia furrier</em>.</li>
+      <li><strong>Pausa.</strong> Que la barra espaciadora pare la obra y la vuelva a poner en marcha. Pista: una variable <code>pausa</code> y un <em>esperar hasta que</em> en el regidor.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>Actividad original basada en <em>El retablo de las maravillas</em>, entremés de Miguel de Cervantes (1615), obra de dominio público. Los resúmenes y ejemplos de esta página son una redacción propia, no el texto de la obra.</p>
+</footer>
+</div>
+
+</body></html>
