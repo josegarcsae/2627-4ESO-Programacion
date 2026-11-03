@@ -10,4 +10,10 @@ Materiales de Programación Informática de 4º ESO (curso 2026-27), IES Alonso 
 - [Scratch: una calculadora](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-calculadora/) (inspirada en un tutorial de Fernando Arciniega; texto propio)
 - [Scratch: teatro con «El retablo de las maravillas»](https://josegarcsae.github.io/2627-4ESO-Programacion/scratch-teatro/) (actividad propia sobre el entremés de Cervantes, dominio público)
 
+### Retos con Scratch e IA
+
+- [Reto 1 · Quiz de repaso](https://josegarcsae.github.io/2627-4ESO-Programacion/reto-1-quiz/)
+- [Reto 2 · Atrapa-objetos con niveles](https://josegarcsae.github.io/2627-4ESO-Programacion/reto-2-atrapa/)
+- [Reto 3 · Juego de memoria de colores](https://josegarcsae.github.io/2627-4ESO-Programacion/reto-3-memoria/)
+
 Las actividades de Scratch están basadas en los tutoriales «Iniciación a la programación con Scratch 2.0», «Videojuego del laberinto con Scratch 2.0», «Videojuego de Pong programado con Scratch 2.0», «Videojuego de Frogger con Scratch 2.0» y «Videojuego de Arkanoid con Scratch 2.0» de la Asociación Programo Ergo Sum (CC BY-SA 4.0). La adaptación se comparte con la misma licencia.
